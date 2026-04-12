@@ -56,10 +56,16 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-			<version>1.18.30</version>
+			<version>1.18.36</version> <scope>provided</scope>
 		</dependency>
 	</dependencies>
+
+	<compilerArgs>
+		<arg>--add-opens</arg>
+		<arg>jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+		<arg>--add-opens</arg>
+		<arg>jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+	</compilerArgs>
 
 	<build>
 		<plugins>

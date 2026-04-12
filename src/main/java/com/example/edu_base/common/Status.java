@@ -1,4 +1,4 @@
-package com.example.edu_base.entity;
+package com.example.edu_base.common;
 
 public enum Status {
     STUDYING,

@@ -30,6 +30,7 @@ public class Student {
 
     @Setter
     @ManyToOne
+    @JoinColumn(name = "student_group_id")
     private StudentGroup studentGroup;
 
     @Setter

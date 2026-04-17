@@ -4,7 +4,7 @@ import com.example.edu_base.dto.StudentGroupDto;
 import com.example.edu_base.entity.StudentGroup;
 import com.example.edu_base.repository.StudentGroupRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,39 +12,38 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 public class StudentGroupService {
-    @Autowired
-    private StudentGroupRepository studentGroupRepository;
+
+    private final StudentGroupRepository studentGroupRepository;
 
     public StudentGroupService(StudentGroupRepository studentGroupRepository) {
         this.studentGroupRepository = studentGroupRepository;
     }
 
     public List<StudentGroupDto> getStudentGroups() {
-        List<StudentGroup> groups = studentGroupRepository.findAll();
-        return groups
+        return studentGroupRepository.findAll()
                 .stream()
-                .map(entity -> StudentGroupDto
-                        .builder()
-                        .id(entity.getId())
-                        .groupName(entity.getGroupName())
-                        .build())
+                .map(this::toDto)
                 .toList();
     }
 
-    public StudentGroupDto getStudentGroupById(long id) {
+    public StudentGroupDto getStudentGroupById(Long id) {
+        if (id == null) {
+            log.error("Ошибка в методе StudentGroupService.getStudentGroupById: id = null");
+            throw new IllegalArgumentException("Id не должно быть пустым!");
+        }
         StudentGroup groupEntity = studentGroupRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Группа с id " + id + " не найдена"));
-        return new StudentGroupDto(
-                groupEntity.getId(),
-                groupEntity.getGroupName(),
-                groupEntity.getCreatedAt(),
-                groupEntity.getUpdatedAt());
+        return toDto(groupEntity);
     }
 
+    @Transactional
     public StudentGroupDto addStudentGroup(StudentGroupDto studentGroupDto) {
-        if (studentGroupDto.getId() != null)
+        if (studentGroupDto.getId() != null) {
+            log.error("Ошибка в методе StudentGroupService.addStudentGroup: id должен быть пустым");
             throw new RuntimeException("id должен быть пустым!");
+        }
         StudentGroup groupEntity = new StudentGroup();
         groupEntity.setGroupName(studentGroupDto.getGroupName());
         groupEntity.setCreatedAt(LocalDateTime.now());
@@ -55,6 +54,10 @@ public class StudentGroupService {
 
     @Transactional
     public StudentGroupDto editStudentGroup(Long id, StudentGroupDto studentGroupDto) {
+        if (id == null) {
+            log.error("Ошибка в методе StudentGroupService.editStudentGroup: id = null");
+            throw new IllegalArgumentException("Id не должно быть пустым!");
+        }
         StudentGroup studentGroup = studentGroupRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Группа с id " + id + " не найдена"));
         studentGroup.setGroupName(studentGroupDto.getGroupName());
@@ -64,8 +67,14 @@ public class StudentGroupService {
 
     @Transactional
     public void deleteStudentGroup(Long id) {
-        if (!studentGroupRepository.existsById(id))
+        if (id == null) {
+            log.error("Ошибка в методе StudentGroupService.deleteStudentGroup: id = null");
+            throw new IllegalArgumentException("Id не должно быть пустым!");
+        }
+        if (!studentGroupRepository.existsById(id)) {
+            log.error("Ошибка в методе StudentGroupService.deleteStudentGroup: группы с id: {} не существует", id);
             throw new EntityNotFoundException("Группа с id " + id + " не найдена");
+        }
         studentGroupRepository.deleteById(id);
     }
 
@@ -75,4 +84,5 @@ public class StudentGroupService {
                 groupEntity.getCreatedAt(),
                 groupEntity.getUpdatedAt());
     }
+
 }

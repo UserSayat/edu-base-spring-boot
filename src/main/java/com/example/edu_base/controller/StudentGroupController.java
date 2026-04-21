@@ -1,7 +1,10 @@
 package com.example.edu_base.controller;
 
+import com.example.edu_base.common.CommonResponse;
+import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.StudentGroupDto;
 import com.example.edu_base.service.StudentGroupService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,37 +23,88 @@ public class StudentGroupController {
         this.studentGroupService = studentGroupService;
     }
 
-    @GetMapping("/getStudentGroups")
-    public ResponseEntity<List<StudentGroupDto>> getStudentGroups() {
+    @GetMapping()
+    public ResponseEntity<CommonResponse<List<StudentGroupDto>>> getStudentGroups() {
          log.info("Вызван метод getStudentGroups()");
-         return ResponseEntity.ok(studentGroupService.getStudentGroups());
+         try {
+             return ResponseEntity.ok(new CommonResponse<>(studentGroupService.getStudentGroups()));
+         } catch (ServerException e) {
+             log.error("Исключение в методе getStudentGroups");
+             return ResponseEntity
+                     .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                     .body(new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails()));
+         }
     }
 
-    @GetMapping("/getStudentGroupById/{id}")
-    public ResponseEntity<StudentGroupDto> getStudentGroupById(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonResponse<StudentGroupDto>> getStudentGroupById(@PathVariable Long id) {
          log.info("Вызван метод getStudentGroupById({})", id);
-         return ResponseEntity.ok(studentGroupService.getStudentGroupById(id));
+         try {
+             return ResponseEntity.ok(new CommonResponse<>(studentGroupService.getStudentGroupById(id)));
+         } catch (ServerException e) {
+             log.error("Исключение ServerException в методе getStudentGroupById");
+             return ResponseEntity
+                     .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                     .body(new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails()));
+         } catch (Exception e) {
+             log.error("Исключение {} в методе getStudentGroupById", e.getClass());
+             return ResponseEntity
+                     .status(HttpStatus.BAD_REQUEST)
+                     .body(new CommonResponse<>(102, e.getMessage(), null));
+         }
     }
 
-    @PostMapping("/addStudentGroup")
-    public ResponseEntity<StudentGroupDto> addStudentGroup(@RequestBody StudentGroupDto studentGroupDto) {
+    @PostMapping()
+    public ResponseEntity<CommonResponse<StudentGroupDto>> addStudentGroup(@Valid @RequestBody StudentGroupDto studentGroupDto) {
          log.info("Вызван метод addStudentGroup()");
-         return ResponseEntity
-                 .status(HttpStatus.CREATED)
-                 .body(studentGroupService.addStudentGroup(studentGroupDto));
+         try {
+             return ResponseEntity
+                     .status(HttpStatus.CREATED)
+                     .body(new CommonResponse<>(studentGroupService.addStudentGroup(studentGroupDto)));
+         } catch (ServerException e) {
+             log.error("Исключение ServerException в методе addStudentGroup");
+             return ResponseEntity
+                     .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                     .body(new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails()));
+         }
     }
 
-    @PutMapping("/editStudentGroup/{id}")
-    public ResponseEntity<StudentGroupDto> editStudentGroup(@PathVariable Long id,
-            @RequestBody StudentGroupDto studentGroupDto) {
+    @PutMapping("/{id}")
+    public ResponseEntity<CommonResponse<StudentGroupDto>> editStudentGroup(@PathVariable Long id,
+            @Valid @RequestBody StudentGroupDto studentGroupDto) {
         log.info("Вызван метод editStudentGroup({})", id);
-         return ResponseEntity.ok(studentGroupService.editStudentGroup(id, studentGroupDto));
+        try {
+            return ResponseEntity.ok(new CommonResponse<>(studentGroupService.editStudentGroup(id, studentGroupDto)));
+        } catch (ServerException e) {
+            log.error("Исключение ServerException в методе editStudentGroup");
+            return ResponseEntity
+                    .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                    .body(new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails()));
+        } catch (Exception e) {
+            log.error("Исключение {} в методе editStudentGroup", e.getClass());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new CommonResponse<>(104, e.getMessage(), null));
+        }
     }
 
-    @DeleteMapping("/deleteStudentGroup/{id}")
-    private ResponseEntity<Void> deleteStudentGroup(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    private ResponseEntity<CommonResponse<Long>> deleteStudentGroup(@PathVariable Long id) {
         log.info("Вызван метод deleteStudentGroup({})", id);
-         studentGroupService.deleteStudentGroup(id);
-         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        try {
+            studentGroupService.deleteStudentGroup(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (ServerException e) {
+            log.error("Исключение ServerException в методе deleteStudentGroup");
+            return ResponseEntity
+                    .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                    .body(new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails()));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNPROCESSABLE_CONTENT)
+                    .body(new CommonResponse<>(105, e.getMessage(), null));
+        }
     }
+
+    //TODO разделить DTO на request и response
 }

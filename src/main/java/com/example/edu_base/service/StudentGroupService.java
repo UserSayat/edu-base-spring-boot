@@ -1,5 +1,6 @@
 package com.example.edu_base.service;
 
+import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.StudentGroupDto;
 import com.example.edu_base.entity.StudentGroup;
 import com.example.edu_base.repository.StudentGroupRepository;
@@ -21,61 +22,82 @@ public class StudentGroupService {
         this.studentGroupRepository = studentGroupRepository;
     }
 
-    public List<StudentGroupDto> getStudentGroups() {
-        return studentGroupRepository.findAll()
-                .stream()
-                .map(this::toDto)
-                .toList();
+    public List<StudentGroupDto> getStudentGroups() throws ServerException {
+        try {
+            return studentGroupRepository.findAll()
+                    .stream()
+                    .map(this::toDto)
+                    .toList();
+        } catch (Exception e) {
+            log.error("db error in method getStudentGroups");
+            throw new ServerException("db error: getStudentGroups", e, 101, null);
+        }
     }
 
-    public StudentGroupDto getStudentGroupById(Long id) {
+    public StudentGroupDto getStudentGroupById(Long id) throws ServerException {
         if (id == null) {
-            log.error("Ошибка в методе StudentGroupService.getStudentGroupById: id = null");
-            throw new IllegalArgumentException("Id не должно быть пустым!");
+            log.error("error in method StudentGroupService.getStudentGroupById: id = null");
+            throw new IllegalArgumentException("id should not be null!");
         }
-        StudentGroup groupEntity = studentGroupRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Группа с id " + id + " не найдена"));
-        return toDto(groupEntity);
+        try {
+            StudentGroup groupEntity = studentGroupRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("student group: " + id + " not found"));
+            return toDto(groupEntity);
+        } catch (Exception e) {
+            throw new ServerException("db error: getStudentGroupById", e, 102, null);
+        }
     }
 
     @Transactional
-    public StudentGroupDto addStudentGroup(StudentGroupDto studentGroupDto) {
+    public StudentGroupDto addStudentGroup(StudentGroupDto studentGroupDto) throws ServerException {
         if (studentGroupDto.getId() != null) {
-            log.error("Ошибка в методе StudentGroupService.addStudentGroup: id должен быть пустым");
-            throw new RuntimeException("id должен быть пустым!");
+            log.error("error in method StudentGroupService.addStudentGroup: id should be null");
+            throw new RuntimeException("id should be null!");
         }
-        StudentGroup groupEntity = new StudentGroup();
-        groupEntity.setGroupName(studentGroupDto.getGroupName());
-        groupEntity.setCreatedAt(LocalDateTime.now());
-        groupEntity.setUpdatedAt(LocalDateTime.now());
-
-        return toDto(studentGroupRepository.save(groupEntity));
+        try {
+            StudentGroup groupEntity = new StudentGroup();
+            groupEntity.setGroupName(studentGroupDto.getGroupName());
+            groupEntity.setCreatedAt(LocalDateTime.now());
+            groupEntity.setUpdatedAt(LocalDateTime.now());
+            return toDto(studentGroupRepository.save(groupEntity));
+        } catch (Exception e) {
+            log.error("error in method StudentGroupService.addStudentGroup");
+            throw new ServerException("db error: addStudentGroup", e, 103, null);
+        }
     }
 
     @Transactional
-    public StudentGroupDto editStudentGroup(Long id, StudentGroupDto studentGroupDto) {
+    public StudentGroupDto editStudentGroup(Long id, StudentGroupDto studentGroupDto) throws ServerException {
         if (id == null) {
-            log.error("Ошибка в методе StudentGroupService.editStudentGroup: id = null");
-            throw new IllegalArgumentException("Id не должно быть пустым!");
+            log.error("error in method StudentGroupService.editStudentGroup: id = null");
+            throw new IllegalArgumentException("id should not be null!");
         }
-        StudentGroup studentGroup = studentGroupRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Группа с id " + id + " не найдена"));
-        studentGroup.setGroupName(studentGroupDto.getGroupName());
-        studentGroup.setUpdatedAt(LocalDateTime.now());
-        return toDto(studentGroup);
+        try {
+            StudentGroup studentGroup = studentGroupRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("student group: " + id + " not found"));
+            studentGroup.setGroupName(studentGroupDto.getGroupName());
+            studentGroup.setUpdatedAt(LocalDateTime.now());
+            return toDto(studentGroup);
+        } catch (Exception e) {
+            throw new ServerException("db error: editStudentGroup", e, 104, null);
+        }
     }
 
     @Transactional
-    public void deleteStudentGroup(Long id) {
+    public void deleteStudentGroup(Long id) throws ServerException {
         if (id == null) {
-            log.error("Ошибка в методе StudentGroupService.deleteStudentGroup: id = null");
-            throw new IllegalArgumentException("Id не должно быть пустым!");
+            log.error("error in method StudentGroupService.deleteStudentGroup: id = null");
+            throw new IllegalArgumentException("id should not be null!");
         }
         if (!studentGroupRepository.existsById(id)) {
-            log.error("Ошибка в методе StudentGroupService.deleteStudentGroup: группы с id: {} не существует", id);
-            throw new EntityNotFoundException("Группа с id " + id + " не найдена");
+            log.error("db error in method StudentGroupService.deleteStudentGroup: group: {} doesn't exist", id);
+            throw new EntityNotFoundException("student group: " + id + " not found");
         }
-        studentGroupRepository.deleteById(id);
+        try {
+            studentGroupRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ServerException("db error: deleteStudentGroup", e, 105, null);
+        }
     }
 
     public StudentGroupDto toDto(StudentGroup groupEntity) {

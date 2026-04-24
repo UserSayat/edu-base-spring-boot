@@ -1,7 +1,5 @@
-package com.example.edu_base.dto;
+package com.example.edu_base.dto.StudentGroup;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +9,11 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@NoArgsConstructor // для десериализации
+@NoArgsConstructor
 @AllArgsConstructor // для @Builder
-public class StudentGroupDto {
+public class StudentGroupResponse {
     private Long id;
 
-    @NotNull
-    @Size(max = 20)
     private String groupName;
 
     private LocalDateTime createdAt;

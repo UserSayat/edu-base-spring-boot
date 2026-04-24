@@ -1,6 +1,7 @@
-package com.example.edu_base.dto;
+package com.example.edu_base.dto.student;
 
 import com.example.edu_base.common.Status;
+import com.example.edu_base.dto.StudentGroup.StudentGroupResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +11,9 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@NoArgsConstructor // для десериализации
+@NoArgsConstructor
 @AllArgsConstructor // для @Builder
-public class StudentDto {
+public class StudentResponse {
     private Long id;
 
     private String lastName;
@@ -20,7 +21,7 @@ public class StudentDto {
     private String middleName;
 
     private Status status;
-    private StudentGroupDto studentGroup;
+    private StudentGroupResponse studentGroup;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

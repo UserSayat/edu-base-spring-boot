@@ -1,7 +1,8 @@
 package com.example.edu_base.service;
 
 import com.example.edu_base.common.ServerException;
-import com.example.edu_base.dto.StudentGroupDto;
+import com.example.edu_base.dto.StudentGroup.StudentGroupRequest;
+import com.example.edu_base.dto.StudentGroup.StudentGroupResponse;
 import com.example.edu_base.entity.StudentGroup;
 import com.example.edu_base.repository.StudentGroupRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,11 +23,11 @@ public class StudentGroupService {
         this.studentGroupRepository = studentGroupRepository;
     }
 
-    public List<StudentGroupDto> getStudentGroups() throws ServerException {
+    public List<StudentGroupResponse> getStudentGroups() throws ServerException {
         try {
             return studentGroupRepository.findAll()
                     .stream()
-                    .map(this::toDto)
+                    .map(this::toResponse)
                     .toList();
         } catch (Exception e) {
             log.error("db error in method getStudentGroups");
@@ -34,7 +35,7 @@ public class StudentGroupService {
         }
     }
 
-    public StudentGroupDto getStudentGroupById(Long id) throws ServerException {
+    public StudentGroupResponse getStudentGroupById(Long id) throws ServerException {
         if (id == null) {
             log.error("error in method StudentGroupService.getStudentGroupById: id = null");
             throw new IllegalArgumentException("id should not be null!");
@@ -42,24 +43,24 @@ public class StudentGroupService {
         try {
             StudentGroup groupEntity = studentGroupRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("student group: " + id + " not found"));
-            return toDto(groupEntity);
+            return toResponse(groupEntity);
         } catch (Exception e) {
             throw new ServerException("db error: getStudentGroupById", e, 102, null);
         }
     }
 
     @Transactional
-    public StudentGroupDto addStudentGroup(StudentGroupDto studentGroupDto) throws ServerException {
-        if (studentGroupDto.getId() != null) {
+    public StudentGroupResponse addStudentGroup(StudentGroupRequest request) throws ServerException {
+        if (request.getId() != null) {
             log.error("error in method StudentGroupService.addStudentGroup: id should be null");
             throw new RuntimeException("id should be null!");
         }
         try {
             StudentGroup groupEntity = new StudentGroup();
-            groupEntity.setGroupName(studentGroupDto.getGroupName());
+            groupEntity.setGroupName(request.getGroupName());
             groupEntity.setCreatedAt(LocalDateTime.now());
             groupEntity.setUpdatedAt(LocalDateTime.now());
-            return toDto(studentGroupRepository.save(groupEntity));
+            return toResponse(studentGroupRepository.save(groupEntity));
         } catch (Exception e) {
             log.error("error in method StudentGroupService.addStudentGroup");
             throw new ServerException("db error: addStudentGroup", e, 103, null);
@@ -67,7 +68,7 @@ public class StudentGroupService {
     }
 
     @Transactional
-    public StudentGroupDto editStudentGroup(Long id, StudentGroupDto studentGroupDto) throws ServerException {
+    public StudentGroupResponse editStudentGroup(Long id, StudentGroupRequest request) throws ServerException {
         if (id == null) {
             log.error("error in method StudentGroupService.editStudentGroup: id = null");
             throw new IllegalArgumentException("id should not be null!");
@@ -75,9 +76,9 @@ public class StudentGroupService {
         try {
             StudentGroup studentGroup = studentGroupRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("student group: " + id + " not found"));
-            studentGroup.setGroupName(studentGroupDto.getGroupName());
+            studentGroup.setGroupName(request.getGroupName());
             studentGroup.setUpdatedAt(LocalDateTime.now());
-            return toDto(studentGroup);
+            return toResponse(studentGroup);
         } catch (Exception e) {
             throw new ServerException("db error: editStudentGroup", e, 104, null);
         }
@@ -100,8 +101,8 @@ public class StudentGroupService {
         }
     }
 
-    public StudentGroupDto toDto(StudentGroup groupEntity) {
-        return new StudentGroupDto(groupEntity.getId(),
+    public StudentGroupResponse toResponse(StudentGroup groupEntity) {
+        return new StudentGroupResponse(groupEntity.getId(),
                 groupEntity.getGroupName(),
                 groupEntity.getCreatedAt(),
                 groupEntity.getUpdatedAt());

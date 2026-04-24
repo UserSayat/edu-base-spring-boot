@@ -2,7 +2,8 @@ package com.example.edu_base.controller;
 
 import com.example.edu_base.common.CommonResponse;
 import com.example.edu_base.common.ServerException;
-import com.example.edu_base.dto.StudentGroupDto;
+import com.example.edu_base.dto.StudentGroup.StudentGroupRequest;
+import com.example.edu_base.dto.StudentGroup.StudentGroupResponse;
 import com.example.edu_base.service.StudentGroupService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class StudentGroupController {
     }
 
     @GetMapping()
-    public ResponseEntity<CommonResponse<List<StudentGroupDto>>> getStudentGroups() {
+    public ResponseEntity<CommonResponse<List<StudentGroupResponse>>> getStudentGroups() {
          log.info("Вызван метод getStudentGroups()");
          try {
              return ResponseEntity.ok(new CommonResponse<>(studentGroupService.getStudentGroups()));
@@ -37,7 +38,7 @@ public class StudentGroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<StudentGroupDto>> getStudentGroupById(@PathVariable Long id) {
+    public ResponseEntity<CommonResponse<StudentGroupResponse>> getStudentGroupById(@PathVariable Long id) {
          log.info("Вызван метод getStudentGroupById({})", id);
          try {
              return ResponseEntity.ok(new CommonResponse<>(studentGroupService.getStudentGroupById(id)));
@@ -55,12 +56,12 @@ public class StudentGroupController {
     }
 
     @PostMapping()
-    public ResponseEntity<CommonResponse<StudentGroupDto>> addStudentGroup(@Valid @RequestBody StudentGroupDto studentGroupDto) {
+    public ResponseEntity<CommonResponse<StudentGroupResponse>> addStudentGroup(@Valid @RequestBody StudentGroupRequest request) {
          log.info("Вызван метод addStudentGroup()");
          try {
              return ResponseEntity
                      .status(HttpStatus.CREATED)
-                     .body(new CommonResponse<>(studentGroupService.addStudentGroup(studentGroupDto)));
+                     .body(new CommonResponse<>(studentGroupService.addStudentGroup(request)));
          } catch (ServerException e) {
              log.error("Исключение ServerException в методе addStudentGroup");
              return ResponseEntity
@@ -70,11 +71,11 @@ public class StudentGroupController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<StudentGroupDto>> editStudentGroup(@PathVariable Long id,
-            @Valid @RequestBody StudentGroupDto studentGroupDto) {
+    public ResponseEntity<CommonResponse<StudentGroupResponse>> editStudentGroup(@PathVariable Long id,
+            @Valid @RequestBody StudentGroupRequest request) {
         log.info("Вызван метод editStudentGroup({})", id);
         try {
-            return ResponseEntity.ok(new CommonResponse<>(studentGroupService.editStudentGroup(id, studentGroupDto)));
+            return ResponseEntity.ok(new CommonResponse<>(studentGroupService.editStudentGroup(id, request)));
         } catch (ServerException e) {
             log.error("Исключение ServerException в методе editStudentGroup");
             return ResponseEntity
@@ -89,7 +90,7 @@ public class StudentGroupController {
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<CommonResponse<Long>> deleteStudentGroup(@PathVariable Long id) {
+    private ResponseEntity<CommonResponse<Void>> deleteStudentGroup(@PathVariable Long id) {
         log.info("Вызван метод deleteStudentGroup({})", id);
         try {
             studentGroupService.deleteStudentGroup(id);
@@ -105,6 +106,4 @@ public class StudentGroupController {
                     .body(new CommonResponse<>(105, e.getMessage(), null));
         }
     }
-
-    //TODO разделить DTO на request и response
 }

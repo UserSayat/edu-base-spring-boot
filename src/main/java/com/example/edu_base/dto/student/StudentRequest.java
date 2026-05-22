@@ -30,6 +30,5 @@ public class StudentRequest {
     private Status status;
 
     @NotNull
-    @Size(max = 20)
-    private String studentGroup;
+    private Long studentGroupId;
 }

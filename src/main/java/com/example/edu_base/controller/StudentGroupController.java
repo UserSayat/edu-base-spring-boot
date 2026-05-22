@@ -2,8 +2,8 @@ package com.example.edu_base.controller;
 
 import com.example.edu_base.common.CommonResponse;
 import com.example.edu_base.common.ServerException;
-import com.example.edu_base.dto.StudentGroup.StudentGroupRequest;
-import com.example.edu_base.dto.StudentGroup.StudentGroupResponse;
+import com.example.edu_base.dto.studentGroup.StudentGroupRequest;
+import com.example.edu_base.dto.studentGroup.StudentGroupResponse;
 import com.example.edu_base.service.StudentGroupService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

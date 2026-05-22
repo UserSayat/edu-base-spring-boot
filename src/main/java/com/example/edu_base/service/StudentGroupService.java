@@ -1,8 +1,8 @@
 package com.example.edu_base.service;
 
 import com.example.edu_base.common.ServerException;
-import com.example.edu_base.dto.StudentGroup.StudentGroupRequest;
-import com.example.edu_base.dto.StudentGroup.StudentGroupResponse;
+import com.example.edu_base.dto.studentGroup.StudentGroupRequest;
+import com.example.edu_base.dto.studentGroup.StudentGroupResponse;
 import com.example.edu_base.entity.StudentGroup;
 import com.example.edu_base.repository.StudentGroupRepository;
 import jakarta.persistence.EntityNotFoundException;

@@ -1,13 +1,13 @@
 package com.example.edu_base.dto.student;
 
 import com.example.edu_base.common.Status;
-import com.example.edu_base.dto.StudentGroup.StudentGroupResponse;
+import com.example.edu_base.dto.studentGroup.StudentGroupResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @Builder
@@ -23,6 +23,6 @@ public class StudentResponse {
     private Status status;
     private StudentGroupResponse studentGroup;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
 }

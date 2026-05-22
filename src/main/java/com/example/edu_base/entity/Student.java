@@ -2,41 +2,115 @@ package com.example.edu_base.entity;
 
 import com.example.edu_base.common.Status;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
-@Getter
-@NoArgsConstructor
+@Table(name = "students")
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     private String lastName;
-    @Setter
     private String firstName;
-    @Setter
     private String middleName;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private Status status;
 
-    @Setter
-    @ManyToOne
-    @JoinColumn(name = "student_group_id")
-    private StudentGroup studentGroup;
+//    @ManyToOne
+//    @JoinColumn(name = "student_group_id")
+    private Long studentGroupId;
 
-    @Setter
-    private LocalDateTime createdAt;
-    @Setter
-    private LocalDateTime updatedAt;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
+
+    public Student() {
+    }
+
+    public Student(Long id,
+                   String lastName,
+                   String firstName,
+                   String middleName,
+                   Status status,
+                   Long studentGroupId,
+                   ZonedDateTime createdAt,
+                   ZonedDateTime updatedAt) {
+        this.id = id;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.status = status;
+        this.studentGroupId = studentGroupId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Long getStudentGroupId() {
+        return studentGroupId;
+    }
+
+    public void setStudentGroupId(Long studentGroupId) {
+        this.studentGroupId = studentGroupId;
+    }
+
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public ZonedDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     @Override
     public boolean equals(Object obj) {

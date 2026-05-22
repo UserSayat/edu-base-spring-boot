@@ -11,7 +11,7 @@ import com.example.edu_base.dto.student.StudentRequest;
 import com.example.edu_base.dto.student.StudentResponse;
 import com.example.edu_base.entity.Student;
 import com.example.edu_base.entity.StudentGroup;
-import com.example.edu_base.repository.StudentGroupRepository;
+import com.example.edu_base.repository.studentGroup.IStudentGroupRepository;
 import com.example.edu_base.repository.student.IStudentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentService {
 
     private final IStudentRepository studentRepository;
-    private final StudentGroupRepository studentGroupRepository;
+    private final IStudentGroupRepository IStudentGroupRepository;
 
-    public StudentService(IStudentRepository studentRepository, StudentGroupRepository studentGroupRepository) {
+    public StudentService(IStudentRepository studentRepository, IStudentGroupRepository IStudentGroupRepository) {
         this.studentRepository = studentRepository;
-        this.studentGroupRepository = studentGroupRepository;
+        this.IStudentGroupRepository = IStudentGroupRepository;
     }
 
     public List<StudentResponse> getStudentsByGroup(Long id) throws ServerException {
@@ -82,7 +82,7 @@ public class StudentService {
     }
 
     public StudentResponse toStudentResponse(Student student) {
-            StudentGroup studentGroup = studentGroupRepository
+            StudentGroup studentGroup = IStudentGroupRepository
                     .findById(student.getStudentGroupId())
                     .orElseThrow(() -> new IllegalArgumentException("group with id: " + student.getStudentGroupId() + " doesn't exist"));
 
@@ -109,7 +109,7 @@ public class StudentService {
             Student student = studentRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("student: " + id + " not found"));
 
-            StudentGroup studentGroup = studentGroupRepository
+            StudentGroup studentGroup = IStudentGroupRepository
                     .findById(request.getStudentGroupId())
                     .orElseThrow(() -> new IllegalArgumentException("group with id: " + request.getStudentGroupId() + " doesn't exist"));
 
@@ -131,13 +131,11 @@ public class StudentService {
     @Transactional
     public void deleteStudent(Long id) throws ServerException {
         if (id == null) {
-            log.error("error in method StudentService.deleteStudent: id should not be null");
+            log.error("id should not be null");
             throw new IllegalArgumentException("id should not be null!");
         }
-        try {
-            studentRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new ServerException("db error: deleteStudent()", e, 205, null);
-        }
+        boolean deleted = studentRepository.deleteById(id);
+        if (!deleted)
+            throw new ServerException("Student wasn't delete", 205, null);
     }
 }

@@ -33,3 +33,4 @@ build/
 .vscode/
 
 .env
+.edu-base.jar

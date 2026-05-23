@@ -55,6 +55,7 @@ public class StudentRepository implements IStudentRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         ZonedDateTime now = ZonedDateTime.now();
+        long timestamp = now.toInstant().toEpochMilli();
         student.setCreatedAt(now);
         student.setUpdatedAt(now);
 

@@ -1,0 +1,128 @@
+package com.example.edu_base.repository.lesson;
+
+import com.example.edu_base.entity.Lesson;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class LessonRepository implements ILessonRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public LessonRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private RowMapper<Lesson> lessonRowMapper = (rs, rowNum) -> {
+//        new Lesson(
+//                rs.getLong("id"),
+//                Optional.ofNullable(rs.getLong("date"))
+//                        .orElseThrow(() -> new IllegalArgumentException("No date is provided"))
+//        )
+        Lesson lesson = new Lesson();
+
+        lesson.setId(rs.getLong("id"));
+
+        lesson.setSubjectId(rs.getLong("subject_id"));
+        LocalDate date = rs.getObject("date", LocalDate.class);
+        if (date != null)
+            lesson.setDate(date);
+
+        lesson.setPairNumber(rs.getLong("pair_number"));
+        lesson.setTeacherId(rs.getLong("teacher_id"));
+        lesson.setStudentGroupId(rs.getLong("student_group_id"));
+
+        OffsetDateTime createdOffset = rs.getObject("created_at", OffsetDateTime.class);
+        if (createdOffset != null)
+            lesson.setCreatedAt(createdOffset.toZonedDateTime());
+
+        OffsetDateTime updatedOffset = rs.getObject("updated_at", OffsetDateTime.class);
+        if (updatedOffset != null)
+            lesson.setUpdatedAt(updatedOffset.toZonedDateTime());
+
+        return lesson;
+    };
+
+    @Override
+    public Lesson save(Lesson lesson) {
+        String sql = "INSERT INTO lessons (subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        ZonedDateTime now = ZonedDateTime.now();
+        lesson.setCreatedAt(now);
+        lesson.setUpdatedAt(now);
+
+        jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setLong(1, lesson.getSubjectId());
+                ps.setObject(2, lesson.getDate());
+                ps.setLong(3, lesson.getPairNumber());
+                ps.setLong(4, lesson.getTeacherId());
+                ps.setLong(5, lesson.getStudentGroupId());
+                ps.setObject(6, lesson.getCreatedAt());
+                ps.setObject(7, lesson.getUpdatedAt());
+
+                return ps;
+        }, keyHolder);
+
+        if (keyHolder.getKey() != null)
+            lesson.setId(keyHolder.getKey().longValue());
+
+        return lesson;
+    }
+
+    @Override
+    public Optional<Lesson> findById(Long id) {
+        String sql = "SELECT id, subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at FROM lessons WHERE id = ?";
+
+        try {
+            Lesson lesson = jdbcTemplate.queryForObject(sql, lessonRowMapper, id);
+            return Optional.ofNullable(lesson);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Lesson> findAll() {
+        String sql = "SELECT id, subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at FROM lessons";
+        return jdbcTemplate.query(sql, lessonRowMapper);
+    }
+
+    @Override
+    public boolean update(Lesson lesson) {
+        String sql = "UPDATE lessons SET subject_id = ?, date = ?, pair_number = ?, teacher_id = ?, student_group_id = ?, updated_at = ? WHERE id = ?";
+
+        int rowAffected = jdbcTemplate.update(sql,
+                lesson.getSubjectId(),
+                lesson.getDate(),
+                lesson.getPairNumber(),
+                lesson.getTeacherId(),
+                lesson.getStudentGroupId(),
+                lesson.getUpdatedAt(),
+                lesson.getId());
+
+        return rowAffected > 0;
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        String sql = "DELETE FROM lessons WHERE id = ?";
+
+        int rowAffected = jdbcTemplate.update(sql, id);
+
+        return rowAffected > 0;
+    }
+}

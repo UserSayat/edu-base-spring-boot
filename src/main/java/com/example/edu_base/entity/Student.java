@@ -1,6 +1,6 @@
 package com.example.edu_base.entity;
 
-import com.example.edu_base.common.Status;
+import com.example.edu_base.common.StudentStatus;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
@@ -18,7 +18,7 @@ public class Student {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private Status status;
+    private StudentStatus studentStatus;
 
 //    @ManyToOne
 //    @JoinColumn(name = "student_group_id")
@@ -28,24 +28,6 @@ public class Student {
     private ZonedDateTime updatedAt;
 
     public Student() {
-    }
-
-    public Student(Long id,
-                   String lastName,
-                   String firstName,
-                   String middleName,
-                   Status status,
-                   Long studentGroupId,
-                   ZonedDateTime createdAt,
-                   ZonedDateTime updatedAt) {
-        this.id = id;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.status = status;
-        this.studentGroupId = studentGroupId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public Long getId() {
@@ -80,12 +62,12 @@ public class Student {
         this.middleName = middleName;
     }
 
-    public Status getStatus() {
-        return status;
+    public StudentStatus getStatus() {
+        return studentStatus;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setStatus(StudentStatus studentStatus) {
+        this.studentStatus = studentStatus;
     }
 
     public Long getStudentGroupId() {

@@ -1,6 +1,6 @@
 package com.example.edu_base.common;
 
-public enum Status {
+public enum StudentStatus {
     STUDYING,
     ON_ACADEMIC_LEAVE,
     EXPELLED

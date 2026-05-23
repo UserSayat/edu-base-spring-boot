@@ -1,4 +1,4 @@
-package com.example.edu_base.service;
+package com.example.edu_base.service.student;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -15,11 +15,10 @@ import com.example.edu_base.repository.studentGroup.IStudentGroupRepository;
 import com.example.edu_base.repository.student.IStudentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-public class StudentService {
+public class StudentService implements IStudentService {
 
     private final IStudentRepository studentRepository;
     private final IStudentGroupRepository IStudentGroupRepository;
@@ -71,7 +70,7 @@ public class StudentService {
             student.setFirstName(request.getFirstName());
             student.setMiddleName(request.getMiddleName());
             student.setStudentGroupId(request.getStudentGroupId());
-            student.setStatus(request.getStatus());
+            student.setStatus(request.getStudentStatus());
             student.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
             student.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
             return toStudentResponse(studentRepository.save(student));
@@ -79,25 +78,6 @@ public class StudentService {
             log.error(e.getCause().toString() + LocalDateTime.now().toString());
             throw new ServerException("db error: addStudent", e, 203, null);
         }
-    }
-
-    public StudentResponse toStudentResponse(Student student) {
-            StudentGroup studentGroup = IStudentGroupRepository
-                    .findById(student.getStudentGroupId())
-                    .orElseThrow(() -> new IllegalArgumentException("group with id: " + student.getStudentGroupId() + " doesn't exist"));
-
-
-            return new StudentResponse(student.getId(),
-                    student.getLastName(),
-                    student.getFirstName(),
-                    student.getMiddleName(),
-                    student.getStatus(),
-                    new StudentGroupResponse(studentGroup.getId(),
-                            studentGroup.getGroupName(),
-                            studentGroup.getCreatedAt(),
-                            studentGroup.getUpdatedAt()),
-                    student.getCreatedAt(),
-                    student.getUpdatedAt());
     }
 
     public StudentResponse editStudent(Long id, StudentRequest request) throws ServerException {
@@ -117,7 +97,7 @@ public class StudentService {
             student.setFirstName(request.getFirstName());
             student.setMiddleName(request.getMiddleName());
             student.setStudentGroupId(request.getStudentGroupId());
-            student.setStatus(request.getStatus());
+            student.setStatus(request.getStudentStatus());
             student.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
             studentRepository.update(student);
@@ -128,7 +108,6 @@ public class StudentService {
         }
     }
 
-    @Transactional
     public void deleteStudent(Long id) throws ServerException {
         if (id == null) {
             log.error("id should not be null");
@@ -137,5 +116,24 @@ public class StudentService {
         boolean deleted = studentRepository.deleteById(id);
         if (!deleted)
             throw new ServerException("Student wasn't delete", 205, null);
+    }
+
+    public StudentResponse toStudentResponse(Student student) {
+        StudentGroup studentGroup = IStudentGroupRepository
+                .findById(student.getStudentGroupId())
+                .orElseThrow(() -> new IllegalArgumentException("group with id: " + student.getStudentGroupId() + " doesn't exist"));
+
+
+        return new StudentResponse(student.getId(),
+                student.getLastName(),
+                student.getFirstName(),
+                student.getMiddleName(),
+                student.getStatus(),
+                new StudentGroupResponse(studentGroup.getId(),
+                        studentGroup.getGroupName(),
+                        studentGroup.getCreatedAt(),
+                        studentGroup.getUpdatedAt()),
+                student.getCreatedAt(),
+                student.getUpdatedAt());
     }
 }

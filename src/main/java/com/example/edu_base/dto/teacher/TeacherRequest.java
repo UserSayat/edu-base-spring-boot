@@ -1,32 +1,24 @@
-package com.example.edu_base.dto.student;
+package com.example.edu_base.dto.teacher;
 
-import com.example.edu_base.common.StudentStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class StudentRequest {
+public class TeacherRequest {
 
     private Long id;
 
     @NotNull
     @Size(max = 20)
     private String lastName;
-
     @NotNull
     @Size(max = 20)
     private String firstName;
 
-    @NotNull
-    @Size(max = 20)
     private String middleName;
-
-    private StudentStatus studentStatus;
-
-    @NotNull
-    private Long studentGroupId;
 
 }

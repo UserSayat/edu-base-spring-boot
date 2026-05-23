@@ -1,7 +1,7 @@
 package com.example.edu_base.repository.student;
 
 import org.springframework.stereotype.Repository;
-import com.example.edu_base.common.Status;
+import com.example.edu_base.common.StudentStatus;
 import com.example.edu_base.entity.Student;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,7 +35,7 @@ public class StudentRepository implements IStudentRepository {
 
         String status = rs.getString("status");
         if (status != null)
-            student.setStatus(Status.valueOf(status));
+            student.setStatus(StudentStatus.valueOf(status));
 
         student.setStudentGroupId(rs.getLong("student_group_id"));
 

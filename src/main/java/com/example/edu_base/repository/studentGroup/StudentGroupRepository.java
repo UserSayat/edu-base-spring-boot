@@ -41,6 +41,7 @@ public class StudentGroupRepository implements IStudentGroupRepository {
         return studentGroup;
     };
 
+    @Override
     public StudentGroup save(StudentGroup studentGroup) {
         String sql = "INSERT INTO student_groups SET group_name = ?, created_at = ?, updated_at = ?";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -64,6 +65,7 @@ public class StudentGroupRepository implements IStudentGroupRepository {
         return studentGroup;
     }
 
+    @Override
     public Optional<StudentGroup> findById(Long id) {
         String sql = "SELECT id, group_name, created_at, updated_at FROM student_groups WHERE id = ?";
         try {
@@ -74,11 +76,13 @@ public class StudentGroupRepository implements IStudentGroupRepository {
         }
     }
 
+    @Override
     public List<StudentGroup> findAll() {
         String sql = "SELECT id, group_name, created_at, updated_at FROM student_groups";
         return jdbcTemplate.query(sql, studentGroupRowMapper);
     }
 
+    @Override
     public boolean update(StudentGroup studentGroup) {
         String sql = "UPDATE student_groups SET group_name = ?, updated_at = ? WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(sql,
@@ -89,6 +93,7 @@ public class StudentGroupRepository implements IStudentGroupRepository {
         return rowsAffected > 0;
     }
 
+    @Override
     public boolean deleteById(Long id) {
         String sql = "DELETE FROM student_groups WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(sql, id);
@@ -96,6 +101,7 @@ public class StudentGroupRepository implements IStudentGroupRepository {
         return rowsAffected > 0;
     }
 
+    @Override
     public Optional<StudentGroup> findByGroupName(String groupName) {
         String sql = "SELECT id, group_name, created_at, updated_at FROM student_groups WHERE group_name = ?";
         try {

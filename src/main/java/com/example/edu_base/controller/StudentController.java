@@ -5,10 +5,9 @@ import com.example.edu_base.common.CommonResponse;
 import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.student.StudentRequest;
 import com.example.edu_base.dto.student.StudentResponse;
-import com.example.edu_base.service.StudentService;
+import com.example.edu_base.service.student.IStudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/student")
 public class StudentController {
 
-    private final StudentService studentService;
+    private final IStudentService studentService;
 
-    public StudentController(StudentService studentService) {
+    public StudentController(IStudentService studentService) {
         this.studentService = studentService;
     }
 

@@ -4,7 +4,7 @@ import com.example.edu_base.common.CommonResponse;
 import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.studentGroup.StudentGroupRequest;
 import com.example.edu_base.dto.studentGroup.StudentGroupResponse;
-import com.example.edu_base.service.StudentGroupService;
+import com.example.edu_base.service.studentGroup.IStudentGroupService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,9 +18,9 @@ import java.util.List;
 @RequestMapping("/group")
 public class StudentGroupController {
 
-    private final StudentGroupService studentGroupService;
+    private final IStudentGroupService studentGroupService;
 
-    public StudentGroupController(StudentGroupService studentGroupService) {
+    public StudentGroupController(IStudentGroupService studentGroupService) {
         this.studentGroupService = studentGroupService;
     }
 

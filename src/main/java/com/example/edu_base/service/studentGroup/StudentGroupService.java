@@ -1,4 +1,4 @@
-package com.example.edu_base.service;
+package com.example.edu_base.service.studentGroup;
 
 import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.studentGroup.StudentGroupRequest;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class StudentGroupService {
+public class StudentGroupService implements IStudentGroupService {
 
     private final IStudentGroupRepository studentGroupRepository;
 

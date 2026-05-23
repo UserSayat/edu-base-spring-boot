@@ -56,14 +56,11 @@ public class TeacherService implements ITeacherService {
 
     @Override
     public List<TeacherResponse> getTeachers() throws ServerException {
-        List<TeacherResponse> teachers = new ArrayList<>();
         try {
-            teachers = teacherRepository.findAll()
+            return teacherRepository.findAll()
                     .stream()
                     .map(this::toTeacherResponse)
                     .toList();
-
-            return teachers;
         } catch (Exception e) {
             throw new ServerException(e.getCause().toString(), e, 201, null);
         }
@@ -77,6 +74,7 @@ public class TeacherService implements ITeacherService {
         try {
             Teacher teacher = teacherRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("teacher: " + id + " not found"));
+
             teacher.setLastName(request.getLastName());
             teacher.setFirstName(request.getFirstName());
             teacher.setMiddleName(request.getMiddleName());

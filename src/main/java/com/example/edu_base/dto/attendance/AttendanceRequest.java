@@ -11,5 +11,5 @@ public class AttendanceRequest {
 
     private Long lessonId;
     private Long studentId;
-    private boolean isPresent;
+    private boolean present;
 }

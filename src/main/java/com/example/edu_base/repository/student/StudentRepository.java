@@ -25,30 +25,18 @@ public class StudentRepository implements IStudentRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<Student> studentRowMapper = (rs, rowNum) -> {
-        Student student = new Student();
-
-        student.setId(rs.getLong("id"));
-        student.setLastName(rs.getString("last_name"));
-        student.setFirstName(rs.getString("first_name"));
-        student.setMiddleName(rs.getString("middle_name"));
-
-        String status = rs.getString("status");
-        if (status != null)
-            student.setStatus(StudentStatus.valueOf(status));
-
-        student.setStudentGroupId(rs.getLong("student_group_id"));
-
-        OffsetDateTime createdOffset = rs.getObject("created_at", OffsetDateTime.class);
-        if (createdOffset != null)
-            student.setCreatedAt(createdOffset.toZonedDateTime());
-
-        OffsetDateTime updatedOffset = rs.getObject("updated_at", OffsetDateTime.class);
-        if (updatedOffset != null)
-            student.setCreatedAt(updatedOffset.toZonedDateTime());
-
-        return student;
-    };
+    private final RowMapper<Student> studentRowMapper = (rs, rowNum) -> new Student(
+        rs.getLong("id"),
+        rs.getString("last_name"),
+        rs.getString("first_name"),
+        rs.getString("middle_name"),
+        rs.getObject("status", StudentStatus.class),
+        rs.getLong("student_group_id"),
+        rs.getObject("created_at", OffsetDateTime.class).toZonedDateTime(),
+        rs.getObject("updated_at", OffsetDateTime.class).toZonedDateTime());
+//        if (updatedOffset != null)
+//            student.setCreatedAt(updatedOffset.toZonedDateTime());
+//        ...
 
     public Student save(Student student) {
         String sql = "INSERT INTO students (last_name, first_name, middle_name, status, student_group_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";

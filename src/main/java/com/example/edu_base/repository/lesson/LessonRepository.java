@@ -25,35 +25,15 @@ public class LessonRepository implements ILessonRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Lesson> lessonRowMapper = (rs, rowNum) -> {
-//        new Lesson(
-//                rs.getLong("id"),
-//                Optional.ofNullable(rs.getLong("date"))
-//                        .orElseThrow(() -> new IllegalArgumentException("No date is provided"))
-//        )
-        Lesson lesson = new Lesson();
-
-        lesson.setId(rs.getLong("id"));
-
-        lesson.setSubjectId(rs.getLong("subject_id"));
-        LocalDate date = rs.getObject("date", LocalDate.class);
-        if (date != null)
-            lesson.setDate(date);
-
-        lesson.setPairNumber(rs.getLong("pair_number"));
-        lesson.setTeacherId(rs.getLong("teacher_id"));
-        lesson.setStudentGroupId(rs.getLong("student_group_id"));
-
-        OffsetDateTime createdOffset = rs.getObject("created_at", OffsetDateTime.class);
-        if (createdOffset != null)
-            lesson.setCreatedAt(createdOffset.toZonedDateTime());
-
-        OffsetDateTime updatedOffset = rs.getObject("updated_at", OffsetDateTime.class);
-        if (updatedOffset != null)
-            lesson.setUpdatedAt(updatedOffset.toZonedDateTime());
-
-        return lesson;
-    };
+    private RowMapper<Lesson> lessonRowMapper = (rs, rowNum) -> new Lesson (
+            rs.getLong("id"),
+            rs.getLong("subject_id"),
+            rs.getObject("date", LocalDate.class),
+            rs.getLong("pair_number"),
+            rs.getLong("teacher_id"),
+            rs.getLong("student_group_id"),
+            rs.getObject("created_at", OffsetDateTime.class).toZonedDateTime(),
+            rs.getObject("updated_at", OffsetDateTime.class).toZonedDateTime());
 
     @Override
     public Lesson save(Lesson lesson) {

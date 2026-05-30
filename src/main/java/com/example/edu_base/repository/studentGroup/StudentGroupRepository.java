@@ -24,22 +24,12 @@ public class StudentGroupRepository implements IStudentGroupRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<StudentGroup> studentGroupRowMapper = (rs, rowNum) -> {
-        StudentGroup studentGroup = new StudentGroup();
-
-        studentGroup.setId(rs.getLong("id"));
-        studentGroup.setGroupName(rs.getString("group_name"));
-
-        OffsetDateTime createdOffset = rs.getObject("created_at", OffsetDateTime.class);
-        if (createdOffset != null)
-            studentGroup.setCreatedAt(createdOffset.toZonedDateTime());
-
-        OffsetDateTime updatedOffset = rs.getObject("updated_at", OffsetDateTime.class);
-        if (updatedOffset != null)
-            studentGroup.setUpdatedAt(updatedOffset.toZonedDateTime());
-
-        return studentGroup;
-    };
+    private final RowMapper<StudentGroup> studentGroupRowMapper = (rs, rowNum) ->
+        new StudentGroup(
+            rs.getLong("id"),
+            rs.getString("group_name"),
+            rs.getObject("created_at", OffsetDateTime.class).toZonedDateTime(),
+            rs.getObject("updated_at", OffsetDateTime.class).toZonedDateTime());
 
     @Override
     public StudentGroup save(StudentGroup studentGroup) {

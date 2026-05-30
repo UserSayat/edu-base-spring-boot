@@ -30,6 +30,17 @@ public class Student {
     public Student() {
     }
 
+    public Student(Long id, String lastName, String firstName, String middleName, StudentStatus studentStatus, Long studentGroupId, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+        this.id = id;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.studentStatus = studentStatus;
+        this.studentGroupId = studentGroupId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public Long getId() {
         return id;
     }

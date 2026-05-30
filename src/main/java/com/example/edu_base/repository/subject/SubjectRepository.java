@@ -24,22 +24,11 @@ public class SubjectRepository implements ISubjectRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Subject> subjectRowMapper = (rs, rowNum) -> {
-        Subject subject = new Subject();
-
-        subject.setId(rs.getLong("id"));
-        subject.setSubjectName(rs.getString("subject_name"));
-
-        OffsetDateTime createdOffset = rs.getObject("created_at", OffsetDateTime.class);
-        if (createdOffset != null)
-            subject.setCreatedAt(createdOffset.toZonedDateTime());
-
-        OffsetDateTime updatedOffset = rs.getObject("updated_at", OffsetDateTime.class);
-        if (updatedOffset != null)
-            subject.setUpdatedAt(updatedOffset.toZonedDateTime());
-
-        return subject;
-    };
+    private RowMapper<Subject> subjectRowMapper = (rs, rowNum) -> new Subject(
+        rs.getLong("id"),
+        rs.getString("subject_name"),
+        rs.getObject("created_at", OffsetDateTime.class).toZonedDateTime(),
+        rs.getObject("updated_at", OffsetDateTime.class).toZonedDateTime());
 
     @Override
     public Subject save(Subject subject) {

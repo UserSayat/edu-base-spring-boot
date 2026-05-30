@@ -21,6 +21,13 @@ public class Subject {
     public Subject() {
     }
 
+    public Subject(Long id, String subjectName, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+        this.id = id;
+        this.subjectName = subjectName;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public Long getId() {
         return id;
     }

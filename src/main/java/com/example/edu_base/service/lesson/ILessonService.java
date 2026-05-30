@@ -9,6 +9,6 @@ public interface ILessonService {
     //LessonWithAttendanceResponse getLessonById(LessonWithAttendanceRequest request);
     //List<LessonResponse> getLessons(LessonRequest request);
 
-    LessonResponse editLesson(Long id, LessonRequest request);
-    void deleteLesson(Long id);
+    LessonResponse editLesson(Long id, LessonRequest request) throws ServerException;
+    void deleteLesson(Long id) throws ServerException;
 }

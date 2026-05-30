@@ -1,26 +1,32 @@
 package com.example.edu_base.entity;
 
 import jakarta.persistence.*;
+
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "student_groups")
-public class StudentGroup {
+@Table(name = "attendances")
+public class Attendance {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String groupName;
+    private Long lessonId;
+    private Long studentId;
+    private boolean isPresent;
 
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
 
-    public StudentGroup() {
+    public Attendance() {
     }
 
-    public StudentGroup(Long id, String groupName, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+    public Attendance(Long id, Long lessonId, Long studentId, boolean isPresent, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.id = id;
-        this.groupName = groupName;
+        this.lessonId = lessonId;
+        this.studentId = studentId;
+        this.isPresent = isPresent;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -33,12 +39,28 @@ public class StudentGroup {
         this.id = id;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public Long getLessonId() {
+        return lessonId;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setLessonId(Long lessonId) {
+        this.lessonId = lessonId;
+    }
+
+    public Long getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
+    public boolean isPresent() {
+        return isPresent;
+    }
+
+    public void setPresent(boolean present) {
+        isPresent = present;
     }
 
     public ZonedDateTime getCreatedAt() {
@@ -60,8 +82,8 @@ public class StudentGroup {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof StudentGroup studentGroup)) return false;
-        return id != null && id.equals(studentGroup.id);
+        if (!(obj instanceof Attendance attendance)) return false;
+        return id != null && id.equals(attendance.id);
     }
 
     @Override

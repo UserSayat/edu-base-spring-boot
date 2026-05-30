@@ -24,23 +24,13 @@ public class TeacherRepository implements ITeacherRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Teacher> teacherRowMapper = (rs, rowNum) -> {
-        Teacher teacher = new Teacher();
-        teacher.setId(rs.getLong("id"));
-        teacher.setLastName(rs.getString("last_name"));
-        teacher.setFirstName(rs.getString("first_name"));
-        teacher.setMiddleName(rs.getString("middle_name"));
-
-        OffsetDateTime createdOffset = rs.getObject("created_at", OffsetDateTime.class);
-        if (createdOffset != null)
-            teacher.setCreatedAt(createdOffset.toZonedDateTime());
-
-        OffsetDateTime updatedOffset = rs.getObject("updated_at", OffsetDateTime.class);
-        if (updatedOffset != null)
-            teacher.setUpdatedAt(updatedOffset.toZonedDateTime());
-
-        return teacher;
-    };
+    private RowMapper<Teacher> teacherRowMapper = (rs, rowNum) -> new Teacher(
+        rs.getLong("id"),
+        rs.getString("last_name"),
+        rs.getString("first_name"),
+        rs.getString("middle_name"),
+        rs.getObject("created_at", OffsetDateTime.class).toZonedDateTime(),
+        rs.getObject("updated_at", OffsetDateTime.class).toZonedDateTime());
 
     @Override
     public Teacher save(Teacher teacher) {

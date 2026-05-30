@@ -22,6 +22,15 @@ public class Teacher {
     public Teacher() {
     }
 
+    public Teacher(Long id, String lastName, String firstName, String middleName, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+        this.id = id;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public Long getId() {
         return id;
     }

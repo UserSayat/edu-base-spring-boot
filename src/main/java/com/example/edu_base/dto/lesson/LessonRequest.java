@@ -9,8 +9,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class LessonRequest {
 
-    private Long id;
-
     private Long subjectId;
     private LocalDate date;
     private Long pairNumber;

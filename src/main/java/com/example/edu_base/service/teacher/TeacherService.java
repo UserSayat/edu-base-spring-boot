@@ -5,11 +5,12 @@ import com.example.edu_base.dto.teacher.TeacherRequest;
 import com.example.edu_base.dto.teacher.TeacherResponse;
 import com.example.edu_base.entity.Teacher;
 import com.example.edu_base.repository.teacher.ITeacherRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,34 +24,33 @@ public class TeacherService implements ITeacherService {
 
     @Override
     public TeacherResponse addTeacher(TeacherRequest request) throws ServerException {
-        if (request.getId() != null) {
-            throw new IllegalArgumentException("id should be null!");
-        }
         try {
-            Teacher teacher = new Teacher();
-            teacher.setLastName(request.getLastName());
-            teacher.setFirstName(request.getFirstName());
-            teacher.setMiddleName(request.getMiddleName());
-            teacher.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
-            teacher.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+            Teacher teacher = new Teacher(null,
+                    request.getLastName(),
+                    request.getFirstName(),
+                    request.getMiddleName(),
+                    ZonedDateTime.now(ZoneOffset.UTC),
+                    ZonedDateTime.now(ZoneOffset.UTC));
 
             return toTeacherResponse(teacherRepository.save(teacher));
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 203, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 3001, null);
         }
     }
 
     @Override
     public TeacherResponse getTeacherById(Long id) throws ServerException {
         if (id == null) {
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
         }
         try {
             Teacher teacher = teacherRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("teacher: " + id + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
             return toTeacherResponse(teacher);
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 202, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 3002, null);
         }
     }
 
@@ -62,18 +62,19 @@ public class TeacherService implements ITeacherService {
                     .map(this::toTeacherResponse)
                     .toList();
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 201, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 3003, null);
         }
     }
 
     @Override
     public TeacherResponse editTeacher(Long id, TeacherRequest request) throws ServerException {
         if (id == null) {
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
         }
         try {
             Teacher teacher = teacherRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("teacher: " + id + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
 
             teacher.setLastName(request.getLastName());
             teacher.setFirstName(request.getFirstName());
@@ -84,19 +85,20 @@ public class TeacherService implements ITeacherService {
 
             return toTeacherResponse(teacher);
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 204, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 3004, null);
         }
     }
 
     @Override
     public void deleteTeacher(Long id) throws ServerException {
         if (id == null) {
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
         }
 
         boolean deleted = teacherRepository.deleteById(id);
         if (!deleted)
-            throw new ServerException("Teacher wasn't delete", 205, null);
+            throw new ServerException("teacher wasn't delete", 3005, null);
     }
 
     public TeacherResponse toTeacherResponse(Teacher teacher) {

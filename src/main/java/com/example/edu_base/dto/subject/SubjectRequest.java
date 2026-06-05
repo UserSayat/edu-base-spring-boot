@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubjectRequest {
 
-    private Long id;
-
     @NotNull
     @Size(max = 20)
     private String subjectName;

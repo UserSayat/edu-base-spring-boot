@@ -5,6 +5,9 @@ import com.example.edu_base.dto.attendance.AttendanceRequest;
 import com.example.edu_base.dto.attendance.AttendanceResponse;
 import com.example.edu_base.entity.Attendance;
 import com.example.edu_base.repository.attendance.IAttendanceRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
@@ -22,10 +25,6 @@ public class AttendanceService implements IAttendanceService {
 
     @Override
     public AttendanceResponse addAttendance(AttendanceRequest request) throws ServerException {
-        if (request.getId() != null) {
-            throw new IllegalArgumentException("id should be null!");
-        }
-
         try {
             Attendance attendance = new Attendance(null,
                     request.getLessonId(),
@@ -36,45 +35,48 @@ public class AttendanceService implements IAttendanceService {
 
             return toAttendanceResponse(attendanceRepository.save(attendance));
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 203, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 6001, null);
         }
     }
 
     @Override
     public AttendanceResponse getAttendanceById(Long id) throws ServerException {
         if (id == null) {
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
         }
 
         try {
             Attendance attendance = attendanceRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("attendance: " + id + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("attendance: " + id + " not found"));
             return toAttendanceResponse(attendance);
         } catch (Exception e) {
-            throw new ServerException("db error: getAttendanceById", e, 202, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 6002, null);
         }
     }
 
     @Override
-    public List<AttendanceResponse> getAllAttendances() throws ServerException {
+    public List<AttendanceResponse> getAttendances() throws ServerException {
         try {
             return attendanceRepository.findAll().stream()
                     .map(this::toAttendanceResponse)
                     .toList();
         } catch (Exception e) {
-            throw new ServerException("db error: getAttendances", e, 101, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 6003, null);
         }
     }
 
     @Override
     public AttendanceResponse editAttendance(Long id, AttendanceRequest request) throws ServerException {
         if (id == null) {
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
         }
 
         try {
             Attendance attendance = attendanceRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("attendance: " + id + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("attendance: " + id + " not found"));
 
             attendance.setLessonId(request.getLessonId());
             attendance.setStudentId(request.getStudentId());
@@ -85,18 +87,19 @@ public class AttendanceService implements IAttendanceService {
 
             return toAttendanceResponse(attendance);
         } catch (Exception e) {
-            throw new ServerException("db error: editAttendance()", e, 204, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 6004, null);
         }
     }
 
     @Override
     public void deleteAttendance(Long id) throws ServerException {
         if (id == null) {
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
         }
         boolean deleted = attendanceRepository.deleteById(id);
         if (!deleted)
-            throw new ServerException("Attendance wasn't delete", 105, null);
+            throw new ServerException("attendance wasn't delete", 6005, null);
     }
 
     public AttendanceResponse toAttendanceResponse(Attendance attendance) {

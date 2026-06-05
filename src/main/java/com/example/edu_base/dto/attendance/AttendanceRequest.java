@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AttendanceRequest {
 
-    private Long id;
-
     private Long lessonId;
     private Long studentId;
     private boolean present;

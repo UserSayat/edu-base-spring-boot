@@ -97,4 +97,16 @@ public class AttendanceRepository implements IAttendanceRepository {
 
         return rowAffected > 0;
     }
+
+    @Override
+    public Optional<Attendance> findByStudentId(Long studentId) {
+        String sql = "SELECT id, lesson_id, student_id, is_present, created_at, updated_at FROM attendances WHERE student_id = ?";
+
+        try {
+            Attendance attendance = jdbcTemplate.queryForObject(sql, attendanceRowMapper, studentId);
+            return Optional.ofNullable(attendance);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
 }

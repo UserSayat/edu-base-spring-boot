@@ -30,16 +30,14 @@ public class StudentRepository implements IStudentRepository {
         rs.getString("last_name"),
         rs.getString("first_name"),
         rs.getString("middle_name"),
-        rs.getObject("status", StudentStatus.class),
+        StudentStatus.valueOf(rs.getObject("student_status").toString()),
         rs.getLong("student_group_id"),
         rs.getObject("created_at", OffsetDateTime.class).toZonedDateTime(),
         rs.getObject("updated_at", OffsetDateTime.class).toZonedDateTime());
-//        if (updatedOffset != null)
-//            student.setCreatedAt(updatedOffset.toZonedDateTime());
-//        ...
 
+    @Override
     public Student save(Student student) {
-        String sql = "INSERT INTO students (last_name, first_name, middle_name, status, student_group_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO students (last_name, first_name, middle_name, student_status, student_group_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         ZonedDateTime now = ZonedDateTime.now();
@@ -66,8 +64,9 @@ public class StudentRepository implements IStudentRepository {
         return student;
     }
 
+    @Override
     public Optional<Student> findById(Long id) {
-        String sql = "SELECT id, last_name, first_name, middle_name, status, student_group_id, created_at, updated_at FROM students WHERE id = ?";
+        String sql = "SELECT id, last_name, first_name, middle_name, student_status, student_group_id, created_at, updated_at FROM students WHERE id = ?";
         try {
             Student student = jdbcTemplate.queryForObject(sql, studentRowMapper, id);
             return Optional.ofNullable(student);
@@ -76,13 +75,9 @@ public class StudentRepository implements IStudentRepository {
         }
     }
 
-    public List<Student> findAll() {
-        String sql = "SELECT id, last_name, first_name, middle_name, status, student_group_id, created_at, updated_at FROM students";
-        return jdbcTemplate.query(sql, studentRowMapper);
-    }
-
+    @Override
     public boolean update(Student student) {
-        String sql = "UPDATE students SET last_name = ?, first_name = ?, middle_name = ?, status = ?, student_group_id = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE students SET last_name = ?, first_name = ?, middle_name = ?, student_status = ?, student_group_id = ?, updated_at = ? WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(sql,
                 student.getLastName(),
                 student.getFirstName(),
@@ -95,6 +90,7 @@ public class StudentRepository implements IStudentRepository {
         return rowsAffected > 0;
     }
 
+    @Override
     public boolean deleteById(Long id) {
         String sql = "DELETE FROM students WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(sql, id);
@@ -102,9 +98,9 @@ public class StudentRepository implements IStudentRepository {
         return rowsAffected > 0;
     }
 
-    public List<Student> findByStudentGroupId(Long id) {
-        String sql = "SELECT id, last_name, first_name, middle_name, status, student_group_id, created_at, updated_at FROM students WHERE student_group_id = ?";
-        return jdbcTemplate.query(sql, studentRowMapper, id);
+    @Override
+    public List<Student> findByStudentGroupId(Long studentGroupId) {
+        String sql = "SELECT id, last_name, first_name, middle_name, student_status, student_group_id, created_at, updated_at FROM students WHERE student_group_id = ?";
+        return jdbcTemplate.query(sql, studentRowMapper, studentGroupId);
     }
-
 }

@@ -11,4 +11,5 @@ public interface IAttendanceRepository {
     List<Attendance> findAll();
     boolean update(Long id, Attendance attendance);
     boolean deleteById(Long id);
+    Optional<Attendance> findByStudentId(Long studentId);
 }

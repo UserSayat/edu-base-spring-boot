@@ -9,7 +9,7 @@ import java.util.List;
 public interface IAttendanceService {
     AttendanceResponse addAttendance(AttendanceRequest request) throws ServerException;
     AttendanceResponse getAttendanceById(Long id) throws ServerException;
-    List<AttendanceResponse> getAllAttendances() throws ServerException;
+    List<AttendanceResponse> getAttendances() throws ServerException;
     AttendanceResponse editAttendance(Long id, AttendanceRequest request) throws ServerException;
     void deleteAttendance(Long id) throws ServerException;
 }

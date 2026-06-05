@@ -10,5 +10,5 @@ public interface IStudentRepository {
     Optional<Student> findById(Long id);
     boolean update(Student student);
     boolean deleteById(Long id);
-    List<Student> findByStudentGroupId(Long id);
+    List<Student> findByStudentGroupId(Long studentGroupId);
 }

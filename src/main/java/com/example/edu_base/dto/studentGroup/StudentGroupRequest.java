@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudentGroupRequest {
 
-        private Long id;
-
         @NotNull
         @Size(max = 20)
         private String groupName;

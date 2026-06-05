@@ -2,7 +2,7 @@ package com.example.edu_base.common;
 
 import java.util.List;
 
-public class ServerException extends Exception {
+public class ServerException extends RuntimeException {
     private Integer errorCode;
     private List<String> details;
 

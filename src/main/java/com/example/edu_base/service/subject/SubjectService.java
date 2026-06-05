@@ -5,6 +5,8 @@ import com.example.edu_base.dto.subject.SubjectRequest;
 import com.example.edu_base.dto.subject.SubjectResponse;
 import com.example.edu_base.entity.Subject;
 import com.example.edu_base.repository.subject.ISubjectRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
@@ -22,32 +24,31 @@ public class SubjectService implements ISubjectService {
 
     @Override
     public SubjectResponse addSubject(SubjectRequest request) throws ServerException {
-        if (request.getId() != null) {
-            throw new IllegalArgumentException("id should be null!");
-        }
         try {
-            Subject subject = new Subject();
-            subject.setSubjectName(request.getSubjectName());
-            subject.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
-            subject.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+            Subject subject = new Subject(null,
+                    request.getSubjectName(),
+                    ZonedDateTime.now(ZoneOffset.UTC),
+                    ZonedDateTime.now(ZoneOffset.UTC));
 
             return toSubjectResponse(subjectRepository.save(subject));
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 203, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 4001, null);
         }
     }
 
     @Override
     public SubjectResponse getSubjectById(Long id) throws ServerException {
         if (id == null)
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
         try {
             Subject subject = subjectRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("subject: " + id + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
 
             return toSubjectResponse(subject);
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 202, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 4002, null);
         }
     }
 
@@ -59,17 +60,18 @@ public class SubjectService implements ISubjectService {
                     .map(this::toSubjectResponse)
                     .toList();
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 202, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 4003, null);
         }
     }
 
     @Override
     public SubjectResponse editSubject(Long id, SubjectRequest request) throws ServerException {
         if (id == null)
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
         try {
             Subject subject = subjectRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("subject: " + id + " not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
 
             subject.setSubjectName(request.getSubjectName());
             subject.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
@@ -78,19 +80,20 @@ public class SubjectService implements ISubjectService {
 
             return toSubjectResponse(subject);
         } catch (Exception e) {
-            throw new ServerException(e.getCause().toString(), e, 204, null);
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            throw new ServerException(message, e, 4004, null);
         }
     }
 
     @Override
     public void deleteSubject(Long id) throws ServerException {
         if (id == null)
-            throw new IllegalArgumentException("id should not be null!");
+            throw new ValidationException("id should not be null!");
 
         boolean deleted = subjectRepository.deleteById(id);
 
         if (!deleted)
-            throw new ServerException("Teacher wasn't delete", 205, null);
+            throw new ServerException("subject wasn't delete", 4005, null);
     }
 
     public SubjectResponse toSubjectResponse(Subject subject) {

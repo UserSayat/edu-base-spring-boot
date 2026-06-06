@@ -6,8 +6,6 @@ import com.example.edu_base.dto.attendance.AttendanceResponse;
 import com.example.edu_base.entity.Attendance;
 import com.example.edu_base.repository.attendance.IAttendanceRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Validation;
-import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
@@ -41,11 +39,7 @@ public class AttendanceService implements IAttendanceService {
     }
 
     @Override
-    public AttendanceResponse getAttendanceById(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
-
+    public AttendanceResponse getAttendanceById(long id) throws ServerException {
         try {
             Attendance attendance = attendanceRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("attendance: " + id + " not found"));
@@ -69,11 +63,7 @@ public class AttendanceService implements IAttendanceService {
     }
 
     @Override
-    public AttendanceResponse editAttendance(Long id, AttendanceRequest request) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
-
+    public AttendanceResponse editAttendance(long id, AttendanceRequest request) throws ServerException {
         try {
             Attendance attendance = attendanceRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("attendance: " + id + " not found"));
@@ -93,10 +83,8 @@ public class AttendanceService implements IAttendanceService {
     }
 
     @Override
-    public void deleteAttendance(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public void deleteAttendance(long id) throws ServerException {
+
         boolean deleted = attendanceRepository.deleteById(id);
         if (!deleted)
             throw new ServerException("attendance wasn't delete", 6005, null);

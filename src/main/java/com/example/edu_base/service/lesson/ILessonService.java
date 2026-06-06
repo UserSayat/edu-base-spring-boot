@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface ILessonService {
     LessonResponse addLesson(LessonRequest request) throws ServerException;
-    LessonWithAttendanceResponse getLessonById(Long id) throws ServerException;
+    LessonWithAttendanceResponse getLessonById(long id) throws ServerException;
     List<LessonResponse> getLessons() throws ServerException;
 
-    LessonResponse editLesson(Long id, LessonRequest request) throws ServerException;
-    void deleteLesson(Long id) throws ServerException;
+    LessonResponse editLesson(long id, LessonRequest request) throws ServerException;
+    void deleteLesson(long id) throws ServerException;
 }

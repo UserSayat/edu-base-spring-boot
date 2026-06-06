@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface ITeacherRepository {
     Teacher save(Teacher teacher);
-    Optional<Teacher> findById(Long id);
+    Optional<Teacher> findById(long id);
     List<Teacher> findAll();
     boolean update(Teacher teacher);
-    boolean deleteById(Long id);
+    boolean deleteById(long id);
 }

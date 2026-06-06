@@ -33,7 +33,7 @@ public class StudentGroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<StudentGroupResponse>> getStudentGroupById(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<StudentGroupResponse>> getStudentGroupById(@PathVariable @Min(1) long id) {
         return ResponseEntity.ok(new CommonResponse<>(studentGroupService.getStudentGroupById(id)));
     }
 
@@ -43,13 +43,13 @@ public class StudentGroupController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<StudentGroupResponse>> editStudentGroup(@PathVariable @Min(1) Long id,
+    public ResponseEntity<CommonResponse<StudentGroupResponse>> editStudentGroup(@PathVariable @Min(1) long id,
                                                                                  @Valid @RequestBody StudentGroupRequest request) {
         return ResponseEntity.ok(new CommonResponse<>(studentGroupService.editStudentGroup(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<CommonResponse<Void>> deleteStudentGroup(@PathVariable @Min(1) Long id) {
+    private ResponseEntity<CommonResponse<Void>> deleteStudentGroup(@PathVariable @Min(1) long id) {
         studentGroupService.deleteStudentGroup(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();

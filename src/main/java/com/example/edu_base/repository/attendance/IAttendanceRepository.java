@@ -7,9 +7,10 @@ import java.util.Optional;
 
 public interface IAttendanceRepository {
     Attendance save(Attendance attendance);
-    Optional<Attendance> findById(Long id);
+    Optional<Attendance> findById(long id);
     List<Attendance> findAll();
-    boolean update(Long id, Attendance attendance);
-    boolean deleteById(Long id);
-    Optional<Attendance> findByStudentId(Long studentId);
+    boolean update(long id, Attendance attendance);
+    boolean deleteById(long id);
+    Optional<Attendance> findByStudentId(long studentId);
+    boolean deleteByStudentId(long id);
 }

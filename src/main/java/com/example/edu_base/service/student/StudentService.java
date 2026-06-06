@@ -1,10 +1,8 @@
 package com.example.edu_base.service.student;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.studentGroup.StudentGroupResponse;
@@ -12,6 +10,7 @@ import com.example.edu_base.dto.student.StudentRequest;
 import com.example.edu_base.dto.student.StudentResponse;
 import com.example.edu_base.entity.Student;
 import com.example.edu_base.entity.StudentGroup;
+import com.example.edu_base.repository.attendance.IAttendanceRepository;
 import com.example.edu_base.repository.studentGroup.IStudentGroupRepository;
 import com.example.edu_base.repository.student.IStudentRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,16 +23,24 @@ import org.springframework.stereotype.Service;
 public class StudentService implements IStudentService {
 
     private final IStudentRepository studentRepository;
-    private final IStudentGroupRepository IStudentGroupRepository;
+    private final IStudentGroupRepository studentGroupRepository;
+    private final IAttendanceRepository attendanceRepository;
 
-    public StudentService(IStudentRepository studentRepository, IStudentGroupRepository IStudentGroupRepository) {
+    public StudentService(IStudentRepository studentRepository,
+                          IStudentGroupRepository studentGroupRepository,
+                          IAttendanceRepository attendanceRepository) {
         this.studentRepository = studentRepository;
-        this.IStudentGroupRepository = IStudentGroupRepository;
+        this.studentGroupRepository = studentGroupRepository;
+        this.attendanceRepository = attendanceRepository;
     }
 
     @Override
     public StudentResponse addStudent(StudentRequest request) throws ServerException {
         try {
+
+            StudentGroup studentGroup = studentGroupRepository.findById(request.getStudentGroupId())
+                    .orElseThrow(() -> new EntityNotFoundException("group with id:" + request.getStudentGroupId() + " not found"));
+
             Student student = new Student(null,
                     request.getLastName(),
                     request.getFirstName(),
@@ -50,10 +57,7 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public StudentResponse getStudentById(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public StudentResponse getStudentById(long id) throws ServerException {
         try {
             Student student = studentRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("student: " + id + " not found"));
@@ -65,10 +69,7 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public List<StudentResponse> getStudentsByGroup(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public List<StudentResponse> getStudentsByGroup(long id) throws ServerException {
         try {
             return studentRepository.findByStudentGroupId(id)
                     .stream()
@@ -81,15 +82,12 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public StudentResponse editStudent(Long id, StudentRequest request) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public StudentResponse editStudent(long id, StudentRequest request) throws ServerException {
         try {
             Student student = studentRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("student: " + id + " not found"));
 
-            StudentGroup studentGroup = IStudentGroupRepository
+            StudentGroup studentGroup = studentGroupRepository
                     .findById(request.getStudentGroupId())
                     .orElseThrow(() -> new EntityNotFoundException("group with id: " + request.getStudentGroupId() + " not found"));
 
@@ -110,19 +108,18 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public void deleteStudent(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
-        boolean deleted = studentRepository.deleteById(id);
-        if (!deleted)
+    public void deleteStudent(long id) throws ServerException {
+
+        boolean deletedStudent = studentRepository.deleteById(id);
+        boolean deletedAttendances = attendanceRepository.deleteByStudentId(id);
+        if (!deletedStudent)
             throw new ServerException("student wasn't delete", 2005, null);
     }
 
     public StudentResponse toStudentResponse(Student student) {
         //Вообще это проверяется при добавлении, но на всякий пока буду проверять
         //вдруг группу удалят, а getStudent будет возвращать groupId = null
-        StudentGroup studentGroup = IStudentGroupRepository
+        StudentGroup studentGroup = studentGroupRepository
                 .findById(student.getStudentGroupId())
                 .orElseThrow(() -> new EntityNotFoundException("group with id: " + student.getStudentGroupId() + " not found"));
 

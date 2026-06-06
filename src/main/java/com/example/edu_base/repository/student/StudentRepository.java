@@ -65,7 +65,7 @@ public class StudentRepository implements IStudentRepository {
     }
 
     @Override
-    public Optional<Student> findById(Long id) {
+    public Optional<Student> findById(long id) {
         String sql = "SELECT id, last_name, first_name, middle_name, student_status, student_group_id, created_at, updated_at FROM students WHERE id = ?";
         try {
             Student student = jdbcTemplate.queryForObject(sql, studentRowMapper, id);
@@ -91,7 +91,7 @@ public class StudentRepository implements IStudentRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM students WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(sql, id);
 
@@ -99,7 +99,7 @@ public class StudentRepository implements IStudentRepository {
     }
 
     @Override
-    public List<Student> findByStudentGroupId(Long studentGroupId) {
+    public List<Student> findByStudentGroupId(long studentGroupId) {
         String sql = "SELECT id, last_name, first_name, middle_name, student_status, student_group_id, created_at, updated_at FROM students WHERE student_group_id = ?";
         return jdbcTemplate.query(sql, studentRowMapper, studentGroupId);
     }

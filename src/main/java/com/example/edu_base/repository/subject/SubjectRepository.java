@@ -18,13 +18,13 @@ import java.util.Optional;
 @Repository
 public class SubjectRepository implements ISubjectRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public SubjectRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Subject> subjectRowMapper = (rs, rowNum) -> new Subject(
+    private final RowMapper<Subject> subjectRowMapper = (rs, rowNum) -> new Subject(
         rs.getLong("id"),
         rs.getString("subject_name"),
         rs.getObject("created_at", OffsetDateTime.class).toZonedDateTime(),
@@ -55,7 +55,7 @@ public class SubjectRepository implements ISubjectRepository {
     }
 
     @Override
-    public Optional<Subject> findById(Long id) {
+    public Optional<Subject> findById(long id) {
         String sql = "SELECT id, subject_name, created_at, updated_at FROM subjects WHERE id = ?";
 
         try {
@@ -85,7 +85,7 @@ public class SubjectRepository implements ISubjectRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM subjects WHERE id = ?";
         int rowAffected = jdbcTemplate.update(sql, id);
 

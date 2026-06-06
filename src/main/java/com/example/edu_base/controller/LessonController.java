@@ -33,7 +33,7 @@ public class LessonController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<LessonWithAttendanceResponse>> getLessonById(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<LessonWithAttendanceResponse>> getLessonById(@PathVariable @Min(1) long id) {
         return ResponseEntity.ok(new CommonResponse<>(lessonService.getLessonById(id)));
     }
 
@@ -43,13 +43,13 @@ public class LessonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<LessonResponse>> editLesson(@PathVariable @Min(1) Long id,
+    public ResponseEntity<CommonResponse<LessonResponse>> editLesson(@PathVariable @Min(1) long id,
                                                                      @Valid @RequestBody LessonRequest request) {
         return ResponseEntity.ok(new CommonResponse<>(lessonService.editLesson(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Void>> deleteLesson(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<Void>> deleteLesson(@PathVariable @Min(1) long id) {
         lessonService.deleteLesson(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                     .build();

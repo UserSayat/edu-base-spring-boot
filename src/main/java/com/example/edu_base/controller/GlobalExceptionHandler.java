@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .toList();
 
-        CommonResponse<?> response = new CommonResponse<>(10003, "validation error in request body", details);
+        CommonResponse<?> response = new CommonResponse<>(10001, "validation error in request body", details);
         response.setSuccess(false);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -44,16 +44,26 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<CommonResponse<?>> handleValidationException(ValidationException e) {
-        CommonResponse<?> response = new CommonResponse<>(10000, "validation error on server side", null);
+        CommonResponse<?> response = new CommonResponse<>(10003, "validation error on server side", null);
         response.setSuccess(false);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(response);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<CommonResponse<?>> handleIllegalArgumentException(IllegalArgumentException e) {
+        String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+        CommonResponse<?> response = new CommonResponse<>(1004, message, null);
+        response.setSuccess(false);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<CommonResponse<?>> handleEntityNotFoundException(EntityNotFoundException e) {
-        CommonResponse<?> response = new CommonResponse<>(10001, "not found", null);
+        String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+        CommonResponse<?> response = new CommonResponse<>(10005, message, null);
         response.setSuccess(false);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(response);
@@ -61,6 +71,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<CommonResponse<?>> handleServerException(ServerException e) {
+        String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
         CommonResponse<?> response = new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails());
         response.setSuccess(false);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT)
@@ -69,7 +80,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<?>> handleException(Exception e) {
-        CommonResponse<?> response = new CommonResponse<>(10004, e.getMessage(), null);
+        String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+        CommonResponse<?> response = new CommonResponse<>(10006, message, null);
         response.setSuccess(false);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(response);

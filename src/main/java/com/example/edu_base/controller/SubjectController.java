@@ -31,7 +31,7 @@ public class SubjectController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<SubjectResponse>> getSubjectById(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<SubjectResponse>> getSubjectById(@PathVariable @Min(1) long id) {
         return ResponseEntity.ok(new CommonResponse<>(subjectService.getSubjectById(id)));
     }
 
@@ -41,13 +41,13 @@ public class SubjectController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<SubjectResponse>> editSubject(@PathVariable @Min(1) Long id,
+    public ResponseEntity<CommonResponse<SubjectResponse>> editSubject(@PathVariable @Min(1) long id,
                                                                        @Valid @RequestBody SubjectRequest request) {
         return ResponseEntity.ok(new CommonResponse<>(subjectService.editSubject(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Void>> deleteSubject(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<Void>> deleteSubject(@PathVariable @Min(1) long id) {
         subjectService.deleteSubject(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                     .build();

@@ -3,10 +3,11 @@ package com.example.edu_base.service.studentGroup;
 import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.studentGroup.StudentGroupRequest;
 import com.example.edu_base.dto.studentGroup.StudentGroupResponse;
+import com.example.edu_base.entity.Student;
 import com.example.edu_base.entity.StudentGroup;
+import com.example.edu_base.repository.student.IStudentRepository;
 import com.example.edu_base.repository.studentGroup.IStudentGroupRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,11 @@ import java.util.List;
 public class StudentGroupService implements IStudentGroupService {
 
     private final IStudentGroupRepository studentGroupRepository;
+    private final IStudentRepository studentRepository;
 
-    public StudentGroupService(IStudentGroupRepository studentGroupRepository) {
+    public StudentGroupService(IStudentGroupRepository studentGroupRepository, IStudentRepository studentRepository) {
         this.studentGroupRepository = studentGroupRepository;
+        this.studentRepository = studentRepository;
     }
 
     @Override
@@ -39,10 +42,7 @@ public class StudentGroupService implements IStudentGroupService {
     }
 
     @Override
-    public StudentGroupResponse getStudentGroupById(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public StudentGroupResponse getStudentGroupById(long id) throws ServerException {
         try {
             StudentGroup groupEntity = studentGroupRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
@@ -67,10 +67,7 @@ public class StudentGroupService implements IStudentGroupService {
     }
 
     @Override
-    public StudentGroupResponse editStudentGroup(Long id, StudentGroupRequest request) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public StudentGroupResponse editStudentGroup(long id, StudentGroupRequest request) throws ServerException {
         try {
             StudentGroup studentGroup = studentGroupRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
@@ -87,10 +84,12 @@ public class StudentGroupService implements IStudentGroupService {
     }
 
     @Override
-    public void deleteStudentGroup(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public void deleteStudentGroup(long id) throws ServerException {
+
+        List<Student> students = studentRepository.findByStudentGroupId(id);
+        if (!students.isEmpty())
+            throw new IllegalArgumentException("group is not empty, can not delete");
+
         boolean deleted = studentGroupRepository.deleteById(id);
         if (!deleted)
             throw new ServerException("student group wasn't delete", 1005, null);

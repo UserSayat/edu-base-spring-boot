@@ -31,7 +31,7 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<TeacherResponse>> getTeacherById(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<TeacherResponse>> getTeacherById(@PathVariable @Min(1) long id) {
             return ResponseEntity.ok(new CommonResponse<>(teacherService.getTeacherById(id)));
     }
 
@@ -41,13 +41,13 @@ public class TeacherController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<TeacherResponse>> editTeacher(@PathVariable @Min(1) Long id,
+    public ResponseEntity<CommonResponse<TeacherResponse>> editTeacher(@PathVariable @Min(1) long id,
                                                                        @Valid @RequestBody TeacherRequest request) {
         return ResponseEntity.ok(new CommonResponse<>(teacherService.editTeacher(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Void>> deleteStudent(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<Void>> deleteStudent(@PathVariable @Min(1) long id) {
         teacherService.deleteTeacher(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT)
                     .build();

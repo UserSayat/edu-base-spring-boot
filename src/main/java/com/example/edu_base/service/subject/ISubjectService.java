@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface ISubjectService {
     SubjectResponse addSubject(SubjectRequest request) throws ServerException;
-    SubjectResponse getSubjectById(Long id) throws ServerException;
+    SubjectResponse getSubjectById(long id) throws ServerException;
     List<SubjectResponse> getSubjects() throws ServerException;
-    SubjectResponse editSubject(Long id, SubjectRequest request) throws ServerException;
-    void deleteSubject(Long id) throws ServerException;
+    SubjectResponse editSubject(long id, SubjectRequest request) throws ServerException;
+    void deleteSubject(long id) throws ServerException;
 }

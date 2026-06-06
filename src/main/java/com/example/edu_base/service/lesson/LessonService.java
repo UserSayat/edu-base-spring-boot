@@ -5,12 +5,13 @@ import com.example.edu_base.dto.lesson.LessonRequest;
 import com.example.edu_base.dto.lesson.LessonResponse;
 import com.example.edu_base.dto.lesson.LessonWithAttendanceResponse;
 import com.example.edu_base.entity.Lesson;
-import com.example.edu_base.entity.Student;
+import com.example.edu_base.entity.StudentGroup;
+import com.example.edu_base.entity.Subject;
 import com.example.edu_base.repository.attendance.IAttendanceRepository;
 import com.example.edu_base.repository.lesson.ILessonRepository;
-import com.example.edu_base.repository.student.IStudentRepository;
+import com.example.edu_base.repository.studentGroup.IStudentGroupRepository;
+import com.example.edu_base.repository.subject.ISubjectRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ValidationException;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.stereotype.Service;
 
@@ -23,20 +24,30 @@ import java.util.List;
 public class LessonService implements ILessonService {
 
     private final ILessonRepository lessonRepository;
-    private final IStudentRepository studentRepository;
+    private final IStudentGroupRepository studentGroupRepository;
+    private final ISubjectRepository subjectRepository;
     private final IAttendanceRepository attendanceRepository;
 
     public LessonService(ILessonRepository lessonRepository,
-                         IStudentRepository studentRepository,
+                         IStudentGroupRepository studentGroupRepository,
+                         ISubjectRepository subjectRepository,
                          IAttendanceRepository attendanceRepository) {
         this.lessonRepository = lessonRepository;
-        this.studentRepository = studentRepository;
+        this.studentGroupRepository = studentGroupRepository;
+        this.subjectRepository = subjectRepository;
         this.attendanceRepository = attendanceRepository;
     }
 
     @Override
     public LessonResponse addLesson(LessonRequest request) throws ServerException {
         try {
+
+            Subject subject = subjectRepository.findById(request.getSubjectId())
+                    .orElseThrow(() -> new EntityNotFoundException("subject with id: " + request.getStudentGroupId() + " not found"));
+
+            StudentGroup studentGroup = studentGroupRepository.findById(request.getStudentGroupId())
+                    .orElseThrow(() -> new EntityNotFoundException("group with id: " + request.getStudentGroupId() + " not found"));
+
             Lesson lesson = new Lesson(null,
                     request.getSubjectId(),
                     request.getDate(),
@@ -54,18 +65,12 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public LessonWithAttendanceResponse getLessonById(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public LessonWithAttendanceResponse getLessonById(long id) throws ServerException {
         try {
             Lesson lesson = lessonRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
 
-            List<Long> studentIds = studentRepository.findByStudentGroupId(lesson.getStudentGroupId())
-                    .stream()
-                    .map(Student::getId)
-                    .toList();
+            List<Long> studentIds = lessonRepository.findStudentsByLessonId(id);
 
             List<Pair<Long, Boolean>> attendance = new ArrayList<>();
             for (Long studentId : studentIds) {
@@ -93,13 +98,16 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public LessonResponse editLesson(Long id, LessonRequest request) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public LessonResponse editLesson(long id, LessonRequest request) throws ServerException {
         try {
             Lesson lesson = lessonRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
+
+            StudentGroup studentGroup = studentGroupRepository.findById(request.getStudentGroupId())
+                    .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
+
+            if (lessonRepository.findByDateAndPairNumber(request.getDate(), request.getPairNumber()).isPresent())
+                throw new IllegalArgumentException("can not edit lesson, time is busy already");
 
             lesson.setSubjectId(request.getSubjectId());
             lesson.setDate(request.getDate());
@@ -118,10 +126,8 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public void deleteLesson(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public void deleteLesson(long id) throws ServerException {
+
         boolean deleted = lessonRepository.deleteById(id);
         if (!deleted)
             throw new ServerException("lesson wasn't delete", 5005, null);

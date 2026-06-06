@@ -58,7 +58,7 @@ public class AttendanceRepository implements IAttendanceRepository {
     }
 
     @Override
-    public Optional<Attendance> findById(Long id) {
+    public Optional<Attendance> findById(long id) {
         String sql = "SELECT id, lesson_id, student_id, is_present, created_at, updated_at FROM attendances WHERE id = ?";
 
         try {
@@ -76,7 +76,7 @@ public class AttendanceRepository implements IAttendanceRepository {
     }
 
     @Override
-    public boolean update(Long id, Attendance attendance) {
+    public boolean update(long id, Attendance attendance) {
         String sql = "UPDATE attendances SET lesson_id = ?, student_id = ?, is_present = ?, updated_at = ? WHERE id = ?";
 
         int rowAffected = jdbcTemplate.update(sql,
@@ -90,7 +90,7 @@ public class AttendanceRepository implements IAttendanceRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM attendances WHERE id = ?";
 
         int rowAffected = jdbcTemplate.update(sql, id);
@@ -99,7 +99,7 @@ public class AttendanceRepository implements IAttendanceRepository {
     }
 
     @Override
-    public Optional<Attendance> findByStudentId(Long studentId) {
+    public Optional<Attendance> findByStudentId(long studentId) {
         String sql = "SELECT id, lesson_id, student_id, is_present, created_at, updated_at FROM attendances WHERE student_id = ?";
 
         try {
@@ -108,5 +108,14 @@ public class AttendanceRepository implements IAttendanceRepository {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean deleteByStudentId(long id) {
+        String sql = "DELETE FROM attendances WHERE student_id = ?";
+
+        int rowAffected = jdbcTemplate.update(sql, id);
+
+        return rowAffected > 0;
     }
 }

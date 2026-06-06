@@ -39,7 +39,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<AttendanceResponse>> getAttendanceById(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<AttendanceResponse>> getAttendanceById(@PathVariable @Min(1) long id) {
         return ResponseEntity.ok(new CommonResponse<>(attendanceService.getAttendanceById(id)));
     }
 
@@ -49,13 +49,13 @@ public class AttendanceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<AttendanceResponse>> editAttendance(@PathVariable @Min(1) Long id,
+    public ResponseEntity<CommonResponse<AttendanceResponse>> editAttendance(@PathVariable @Min(1) long id,
                                                                              @Valid @RequestBody AttendanceRequest request) {
         return ResponseEntity.ok(new CommonResponse<>(attendanceService.editAttendance(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Void>> deleteAttendance(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<Void>> deleteAttendance(@PathVariable @Min(1) long id) {
         attendanceService.deleteAttendance(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();

@@ -3,7 +3,9 @@ package com.example.edu_base.service.subject;
 import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.subject.SubjectRequest;
 import com.example.edu_base.dto.subject.SubjectResponse;
+import com.example.edu_base.entity.Lesson;
 import com.example.edu_base.entity.Subject;
+import com.example.edu_base.repository.lesson.ILessonRepository;
 import com.example.edu_base.repository.subject.ISubjectRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
@@ -17,9 +19,11 @@ import java.util.List;
 public class SubjectService implements ISubjectService {
 
     private final ISubjectRepository subjectRepository;
+    private final ILessonRepository lessonRepository;
 
-    public SubjectService(ISubjectRepository subjectRepository) {
+    public SubjectService(ISubjectRepository subjectRepository, ILessonRepository lessonRepository) {
         this.subjectRepository = subjectRepository;
+        this.lessonRepository = lessonRepository;
     }
 
     @Override
@@ -38,9 +42,7 @@ public class SubjectService implements ISubjectService {
     }
 
     @Override
-    public SubjectResponse getSubjectById(Long id) throws ServerException {
-        if (id == null)
-            throw new ValidationException("id should not be null!");
+    public SubjectResponse getSubjectById(long id) throws ServerException {
         try {
             Subject subject = subjectRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
@@ -66,9 +68,7 @@ public class SubjectService implements ISubjectService {
     }
 
     @Override
-    public SubjectResponse editSubject(Long id, SubjectRequest request) throws ServerException {
-        if (id == null)
-            throw new ValidationException("id should not be null!");
+    public SubjectResponse editSubject(long id, SubjectRequest request) throws ServerException {
         try {
             Subject subject = subjectRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
@@ -86,9 +86,11 @@ public class SubjectService implements ISubjectService {
     }
 
     @Override
-    public void deleteSubject(Long id) throws ServerException {
-        if (id == null)
-            throw new ValidationException("id should not be null!");
+    public void deleteSubject(long id) throws ServerException {
+
+        List<Lesson> lessons = lessonRepository.findBySubjectId(id);
+        if (!lessons.isEmpty())
+            throw new IllegalArgumentException("can not delete subject while lessons with it exist");
 
         boolean deleted = subjectRepository.deleteById(id);
 

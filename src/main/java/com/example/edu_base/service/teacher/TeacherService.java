@@ -3,10 +3,11 @@ package com.example.edu_base.service.teacher;
 import com.example.edu_base.common.ServerException;
 import com.example.edu_base.dto.teacher.TeacherRequest;
 import com.example.edu_base.dto.teacher.TeacherResponse;
+import com.example.edu_base.entity.Lesson;
 import com.example.edu_base.entity.Teacher;
+import com.example.edu_base.repository.lesson.ILessonRepository;
 import com.example.edu_base.repository.teacher.ITeacherRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
@@ -17,9 +18,11 @@ import java.util.List;
 public class TeacherService implements ITeacherService {
 
     private final ITeacherRepository teacherRepository;
+    private final ILessonRepository lessonRepository;
 
-    public TeacherService(ITeacherRepository teacherRepository) {
+    public TeacherService(ITeacherRepository teacherRepository, ILessonRepository lessonRepository) {
         this.teacherRepository = teacherRepository;
+        this.lessonRepository = lessonRepository;
     }
 
     @Override
@@ -40,10 +43,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public TeacherResponse getTeacherById(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public TeacherResponse getTeacherById(long id) throws ServerException {
         try {
             Teacher teacher = teacherRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
@@ -68,10 +68,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public TeacherResponse editTeacher(Long id, TeacherRequest request) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public TeacherResponse editTeacher(long id, TeacherRequest request) throws ServerException {
         try {
             Teacher teacher = teacherRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
@@ -91,10 +88,11 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public void deleteTeacher(Long id) throws ServerException {
-        if (id == null) {
-            throw new ValidationException("id should not be null!");
-        }
+    public void deleteTeacher(long id) throws ServerException {
+
+        List<Lesson> lessons = lessonRepository.findByTeacherId(id);
+        if (!lessons.isEmpty())
+            throw new IllegalArgumentException("can not delete teacher while lessons with him exist");
 
         boolean deleted = teacherRepository.deleteById(id);
         if (!deleted)

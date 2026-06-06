@@ -1,6 +1,7 @@
 package com.example.edu_base.repository.lesson;
 
 import com.example.edu_base.entity.Lesson;
+import com.example.edu_base.entity.Student;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -25,7 +26,7 @@ public class LessonRepository implements ILessonRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Lesson> lessonRowMapper = (rs, rowNum) -> new Lesson (
+    private final RowMapper<Lesson> lessonRowMapper = (rs, rowNum) -> new Lesson (
             rs.getLong("id"),
             rs.getLong("subject_id"),
             rs.getObject("date", LocalDate.class),
@@ -37,7 +38,10 @@ public class LessonRepository implements ILessonRepository {
 
     @Override
     public Lesson save(Lesson lesson) {
-        String sql = "INSERT INTO lessons (subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+                    INSERT INTO lessons (subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         ZonedDateTime now = ZonedDateTime.now();
@@ -64,7 +68,7 @@ public class LessonRepository implements ILessonRepository {
     }
 
     @Override
-    public Optional<Lesson> findById(Long id) {
+    public Optional<Lesson> findById(long id) {
         String sql = "SELECT id, subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at FROM lessons WHERE id = ?";
 
         try {
@@ -98,11 +102,43 @@ public class LessonRepository implements ILessonRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM lessons WHERE id = ?";
 
         int rowAffected = jdbcTemplate.update(sql, id);
 
         return rowAffected > 0;
+    }
+
+    @Override
+    public List<Lesson> findByTeacherId(long id) {
+        String sql = "SELECT id, subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at FROM lessons WHERE teacher_id = ?";
+        return jdbcTemplate.query(sql, lessonRowMapper, id);
+    }
+
+    @Override
+    public List<Lesson> findBySubjectId(long id) {
+        String sql = "SELECT id, subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at FROM lessons WHERE subject_id = ?";
+        return jdbcTemplate.query(sql, lessonRowMapper, id);
+    }
+
+    @Override
+    public Optional<Lesson> findByDateAndPairNumber(LocalDate date, long pairNumber) {
+        String sql = """
+                SELECT id, subject_id, date, pair_number, teacher_id, student_group_id, created_at, updated_at
+                FROM lessons WHERE date = ? AND pair_number = ?
+                """;
+        try {
+            Lesson lesson = jdbcTemplate.queryForObject(sql, lessonRowMapper, date, pairNumber);
+            return Optional.ofNullable(lesson);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Long> findStudentsByLessonId(long id) {
+        String sql = "SELECT student_id FROM lessons WHERE lesson_id = ?";
+        return jdbcTemplate.queryForList(sql, Long.class, id);
     }
 }

@@ -9,9 +9,9 @@ import java.util.List;
 public interface ITeacherService {
 
     TeacherResponse addTeacher(TeacherRequest request) throws ServerException;
-    TeacherResponse getTeacherById(Long id) throws ServerException;
+    TeacherResponse getTeacherById(long id) throws ServerException;
     List<TeacherResponse> getTeachers() throws ServerException;
-    TeacherResponse editTeacher(Long id, TeacherRequest request) throws ServerException;
-    void deleteTeacher(Long id) throws ServerException;
+    TeacherResponse editTeacher(long id, TeacherRequest request) throws ServerException;
+    void deleteTeacher(long id) throws ServerException;
 
 }

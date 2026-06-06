@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface IStudentGroupRepository {
     StudentGroup save(StudentGroup studentGroup);
-    Optional<StudentGroup> findById(Long id);
+    Optional<StudentGroup> findById(long id);
     List<StudentGroup> findAll();
     boolean update(StudentGroup studentGroup);
-    boolean deleteById(Long id);
+    boolean deleteById(long id);
     Optional<StudentGroup> findByGroupName(String name);
 }

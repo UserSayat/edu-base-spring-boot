@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface ISubjectRepository {
     Subject save(Subject subject);
-    Optional<Subject> findById(Long id);
+    Optional<Subject> findById(long id);
     List<Subject> findAll();
     boolean update(Subject subject);
-    boolean deleteById(Long id);
+    boolean deleteById(long id);
 }

@@ -18,7 +18,7 @@ import java.util.Optional;
 @Repository
 public class StudentGroupRepository implements IStudentGroupRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public StudentGroupRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -56,7 +56,7 @@ public class StudentGroupRepository implements IStudentGroupRepository {
     }
 
     @Override
-    public Optional<StudentGroup> findById(Long id) {
+    public Optional<StudentGroup> findById(long id) {
         String sql = "SELECT id, group_name, created_at, updated_at FROM student_groups WHERE id = ?";
         try {
             StudentGroup studentGroup = jdbcTemplate.queryForObject(sql, studentGroupRowMapper, id);
@@ -84,7 +84,7 @@ public class StudentGroupRepository implements IStudentGroupRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM student_groups WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(sql, id);
 

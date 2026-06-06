@@ -7,8 +7,8 @@ import com.example.edu_base.entity.Student;
 
 public interface IStudentRepository {
     Student save (Student student);
-    Optional<Student> findById(Long id);
+    Optional<Student> findById(long id);
     boolean update(Student student);
-    boolean deleteById(Long id);
-    List<Student> findByStudentGroupId(Long studentGroupId);
+    boolean deleteById(long id);
+    List<Student> findByStudentGroupId(long studentGroupId);
 }

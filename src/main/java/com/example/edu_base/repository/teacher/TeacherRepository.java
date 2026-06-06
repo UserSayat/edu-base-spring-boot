@@ -18,13 +18,13 @@ import java.util.Optional;
 @Repository
 public class TeacherRepository implements ITeacherRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public TeacherRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private RowMapper<Teacher> teacherRowMapper = (rs, rowNum) -> new Teacher(
+    private final RowMapper<Teacher> teacherRowMapper = (rs, rowNum) -> new Teacher(
         rs.getLong("id"),
         rs.getString("last_name"),
         rs.getString("first_name"),
@@ -59,7 +59,7 @@ public class TeacherRepository implements ITeacherRepository {
     }
 
     @Override
-    public Optional<Teacher> findById(Long id) {
+    public Optional<Teacher> findById(long id) {
         String sql = "SELECT id, last_name, first_name, middle_name, created_at, updated_at FROM teachers WHERE id = ?";
         try {
             Teacher teacher = jdbcTemplate.queryForObject(sql, teacherRowMapper, id);
@@ -89,7 +89,7 @@ public class TeacherRepository implements ITeacherRepository {
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM teachers WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(sql, id);
 

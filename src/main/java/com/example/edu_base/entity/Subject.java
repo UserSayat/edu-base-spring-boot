@@ -3,7 +3,6 @@ package com.example.edu_base.entity;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "subjects")

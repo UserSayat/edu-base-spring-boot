@@ -32,23 +32,23 @@ public class StudentController {
     }
 
     @GetMapping("/group/{id}")
-    public ResponseEntity<CommonResponse<List<StudentResponse>>> getStudentsByGroup(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<List<StudentResponse>>> getStudentsByGroup(@PathVariable @Min(1) long id) {
         return ResponseEntity.ok(new CommonResponse<>(studentService.getStudentsByGroup(id)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<StudentResponse>> getStudentById(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<StudentResponse>> getStudentById(@PathVariable @Min(1) long id) {
         return ResponseEntity.ok(new CommonResponse<>(studentService.getStudentById(id)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommonResponse<StudentResponse>> editStudent(@PathVariable @Min(1) Long id,
+    public ResponseEntity<CommonResponse<StudentResponse>> editStudent(@PathVariable @Min(1) long id,
                                                                        @Valid @RequestBody StudentRequest request) {
         return ResponseEntity.ok(new CommonResponse<>(studentService.editStudent(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Void>> deleteStudent(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<CommonResponse<Void>> deleteStudent(@PathVariable @Min(1) long id) {
         studentService.deleteStudent(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT)
                     .build();

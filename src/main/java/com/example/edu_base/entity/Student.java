@@ -1,27 +1,18 @@
 package com.example.edu_base.entity;
 
 import com.example.edu_base.common.StudentStatus;
-import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
 
-@Entity
-@Table(name = "students")
 public class Student {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String lastName;
     private String firstName;
     private String middleName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
     private StudentStatus studentStatus;
 
-//    @ManyToOne
-//    @JoinColumn(name = "student_group_id")
     private Long studentGroupId;
 
     private ZonedDateTime createdAt;

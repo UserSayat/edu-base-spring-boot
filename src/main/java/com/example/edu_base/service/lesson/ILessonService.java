@@ -1,6 +1,6 @@
 package com.example.edu_base.service.lesson;
 
-import com.example.edu_base.common.ServerException;
+import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.lesson.LessonRequest;
 import com.example.edu_base.dto.lesson.LessonResponse;
 import com.example.edu_base.dto.lesson.LessonWithAttendanceResponse;

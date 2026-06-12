@@ -6,6 +6,7 @@ import com.example.edu_base.dto.attendance.AttendanceResponse;
 import com.example.edu_base.service.attendance.IAttendanceService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,14 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
-//TODO Можно сохранять посещаемость в виде мапы (но это расточительно)
-//TODO Можно в виде двух списков один id студентов другой список флагов был/не был (самый трудный вариант)
-//TODO Можно сохранять как список пар (id студента и был/не был)
-//TODO Редактировать можно наверное по отдельности (может даже через PATCH запрос)
-
-
-
+@Slf4j
 @RestController
 @Validated
 @RequestMapping("api/attendances")
@@ -34,29 +28,59 @@ public class AttendanceController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<AttendanceResponse>> addAttendance(@Valid @RequestBody AttendanceRequest request) {
+        log.info("request to add attendance for lesson: {} ", request.getLessonId());
+
+        AttendanceResponse response = attendanceService.addAttendance(request);
+
+        log.info("attendance: {}, added successfully", response.getId());
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new CommonResponse<>(attendanceService.addAttendance(request)));
+                    .body(new CommonResponse<>(response));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<AttendanceResponse>> getAttendanceById(@PathVariable @Min(1) long id) {
-        return ResponseEntity.ok(new CommonResponse<>(attendanceService.getAttendanceById(id)));
+        log.info("request to get attendance by id: {}", id);
+
+        AttendanceResponse response = attendanceService.getAttendanceById(id);
+
+        log.info("attendance: {}, successfully received", id);
+
+        return ResponseEntity.ok(new CommonResponse<>(response));
     }
 
     @GetMapping()
     public ResponseEntity<CommonResponse<List<AttendanceResponse>>> getAllAttendances() {
-        return ResponseEntity.ok(new CommonResponse<>(attendanceService.getAttendances()));
+        log.info("request to get attendances");
+
+        List<AttendanceResponse> response = attendanceService.getAttendances();
+
+        log.info("attendances successfully received");
+
+        return ResponseEntity.ok(new CommonResponse<>(response));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CommonResponse<AttendanceResponse>> editAttendance(@PathVariable @Min(1) long id,
                                                                              @Valid @RequestBody AttendanceRequest request) {
-        return ResponseEntity.ok(new CommonResponse<>(attendanceService.editAttendance(id, request)));
+
+        log.info("request to edit attendance by id: {}", id);
+
+        AttendanceResponse response = attendanceService.editAttendance(id, request);
+
+        log.info("attendance: {}, successfully edited", id);
+
+        return ResponseEntity.ok(new CommonResponse<>(response));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<Void>> deleteAttendance(@PathVariable @Min(1) long id) {
+        log.info("request to delete attendance by id: {}", id);
+
         attendanceService.deleteAttendance(id);
+
+        log.info("attendance: {}, successfully deleted", id);
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }

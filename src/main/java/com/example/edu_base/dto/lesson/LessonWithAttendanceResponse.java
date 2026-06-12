@@ -3,7 +3,7 @@ package com.example.edu_base.dto.lesson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;

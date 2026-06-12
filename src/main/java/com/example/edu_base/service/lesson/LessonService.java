@@ -1,18 +1,18 @@
 package com.example.edu_base.service.lesson;
 
-import com.example.edu_base.common.ServerException;
+import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.lesson.LessonRequest;
 import com.example.edu_base.dto.lesson.LessonResponse;
 import com.example.edu_base.dto.lesson.LessonWithAttendanceResponse;
 import com.example.edu_base.entity.Lesson;
-import com.example.edu_base.entity.StudentGroup;
-import com.example.edu_base.entity.Subject;
 import com.example.edu_base.repository.attendance.IAttendanceRepository;
 import com.example.edu_base.repository.lesson.ILessonRepository;
 import com.example.edu_base.repository.studentGroup.IStudentGroupRepository;
 import com.example.edu_base.repository.subject.ISubjectRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.antlr.v4.runtime.misc.Pair;
+import com.example.edu_base.exception.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class LessonService implements ILessonService {
 
     private final ILessonRepository lessonRepository;
@@ -40,13 +41,13 @@ public class LessonService implements ILessonService {
 
     @Override
     public LessonResponse addLesson(LessonRequest request) throws ServerException {
+        log.info("adding lesson for student group: {}", request.getStudentGroupId());
         try {
-
-            Subject subject = subjectRepository.findById(request.getSubjectId())
+            subjectRepository.findById(request.getSubjectId())
                     .orElseThrow(() -> new EntityNotFoundException("subject with id: " + request.getStudentGroupId() + " not found"));
 
-            StudentGroup studentGroup = studentGroupRepository.findById(request.getStudentGroupId())
-                    .orElseThrow(() -> new EntityNotFoundException("group with id: " + request.getStudentGroupId() + " not found"));
+            studentGroupRepository.findById(request.getStudentGroupId())
+                    .orElseThrow(() -> new EntityNotFoundException("student group with id: " + request.getStudentGroupId() + " not found"));
 
             Lesson lesson = new Lesson(null,
                     request.getSubjectId(),
@@ -60,12 +61,14 @@ public class LessonService implements ILessonService {
             return toLessonResponse(lessonRepository.save(lesson));
         } catch (Exception e) {
             String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            log.error("failed to add lesson for student group: {}", request.getStudentGroupId(), e);
             throw new ServerException(message, e, 5001, null);
         }
     }
 
     @Override
     public LessonWithAttendanceResponse getLessonById(long id) throws ServerException {
+        log.info("getting lesson by id: {}", id);
         try {
             Lesson lesson = lessonRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
@@ -75,12 +78,13 @@ public class LessonService implements ILessonService {
             List<Pair<Long, Boolean>> attendance = new ArrayList<>();
             for (Long studentId : studentIds) {
                 Boolean isPresent = attendanceRepository.findByStudentId(studentId).isPresent();
-                attendance.add(new Pair<>(studentId, isPresent));
+                attendance.add(new ImmutablePair<>(studentId, isPresent));
             }
 
             return toLessonWithAttendanceResponse(lesson, attendance);
         } catch (Exception e) {
             String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            log.error("failed to get lesson: {}", id, e);
             throw new ServerException(message, e, 5002, null);
         }
     }
@@ -93,17 +97,19 @@ public class LessonService implements ILessonService {
                     .toList();
         } catch (Exception e) {
             String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            log.error("failed to get lessons", e);
             throw new ServerException(message, e, 5003, null);
         }
     }
 
     @Override
     public LessonResponse editLesson(long id, LessonRequest request) throws ServerException {
+        log.info("editing lesson by id: {}", id);
         try {
             Lesson lesson = lessonRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
 
-            StudentGroup studentGroup = studentGroupRepository.findById(request.getStudentGroupId())
+            studentGroupRepository.findById(request.getStudentGroupId())
                     .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
 
             if (lessonRepository.findByDateAndPairNumber(request.getDate(), request.getPairNumber()).isPresent())
@@ -121,16 +127,18 @@ public class LessonService implements ILessonService {
             return toLessonResponse(lesson);
         } catch (Exception e) {
             String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+            log.error("failed to edit lesson: {}", id, e);
             throw new ServerException(message, e, 5004, null);
         }
     }
 
     @Override
     public void deleteLesson(long id) throws ServerException {
-
+        log.info("deleting lesson by id: {}", id);
         boolean deleted = lessonRepository.deleteById(id);
-        if (!deleted)
+        if (!deleted) {
             throw new ServerException("lesson wasn't delete", 5005, null);
+        }
     }
 
 

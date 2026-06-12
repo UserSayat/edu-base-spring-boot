@@ -1,6 +1,6 @@
 package com.example.edu_base.service.student;
 
-import com.example.edu_base.common.ServerException;
+import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.student.StudentRequest;
 import com.example.edu_base.dto.student.StudentResponse;
 

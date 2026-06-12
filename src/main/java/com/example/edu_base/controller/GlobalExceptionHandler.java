@@ -1,10 +1,10 @@
 package com.example.edu_base.controller;
 
 import com.example.edu_base.common.CommonResponse;
-import com.example.edu_base.common.ServerException;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.edu_base.exception.ServerException;
+import com.example.edu_base.exception.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -21,6 +22,8 @@ public class GlobalExceptionHandler {
         List<String> details = e.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .toList();
+
+        log.warn("request could not be processed due to invalid parameters of request body: {}", details);
 
         CommonResponse<?> response = new CommonResponse<>(10001, "validation error in request body", details);
         response.setSuccess(false);
@@ -35,16 +38,9 @@ public class GlobalExceptionHandler {
                 .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                 .toList();
 
+        log.warn("request could not be processed due to invalid parameters of path variables or request params: {}", details);
+
         CommonResponse<?> response = new CommonResponse<>(10002, "validation error of request params or path variables", details);
-        response.setSuccess(false);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(response);
-    }
-
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<CommonResponse<?>> handleValidationException(ValidationException e) {
-        CommonResponse<?> response = new CommonResponse<>(10003, "validation error on server side", null);
         response.setSuccess(false);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -54,6 +50,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<CommonResponse<?>> handleIllegalArgumentException(IllegalArgumentException e) {
         String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+
+        log.warn("invalid arguments passed, {}", message);
+
         CommonResponse<?> response = new CommonResponse<>(1004, message, null);
         response.setSuccess(false);
         return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -63,6 +62,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<CommonResponse<?>> handleEntityNotFoundException(EntityNotFoundException e) {
         String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+
+        log.warn("requested resource is missing, {}", message);
+
         CommonResponse<?> response = new CommonResponse<>(10005, message, null);
         response.setSuccess(false);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -71,6 +73,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<CommonResponse<?>> handleServerException(ServerException e) {
+        log.error("database interaction failure while performing an operation: ", e);
         String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
         CommonResponse<?> response = new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails());
         response.setSuccess(false);
@@ -80,6 +83,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<?>> handleException(Exception e) {
+        log.error("unexpected error occurred while processing request: ", e);
         String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
         CommonResponse<?> response = new CommonResponse<>(10006, message, null);
         response.setSuccess(false);

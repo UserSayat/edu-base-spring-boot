@@ -28,29 +28,58 @@ public class StudentGroupController {
 
     @PostMapping()
     public ResponseEntity<CommonResponse<StudentGroupResponse>> addStudentGroup(@Valid @RequestBody StudentGroupRequest request) {
+        log.info("request to add student group: {}", request.getGroupName());
+
+        StudentGroupResponse response = studentGroupService.addStudentGroup(request);
+
+        log.info("student group: {}, added successfully", response.getId());
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new CommonResponse<>(studentGroupService.addStudentGroup(request)));
+                .body(new CommonResponse<>(response));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<StudentGroupResponse>> getStudentGroupById(@PathVariable @Min(1) long id) {
-        return ResponseEntity.ok(new CommonResponse<>(studentGroupService.getStudentGroupById(id)));
+        log.info("request to get student group by id: {}", id);
+
+        StudentGroupResponse response = studentGroupService.getStudentGroupById(id);
+
+        log.info("student group: {}, successfully received", id);
+
+        return ResponseEntity.ok(new CommonResponse<>(response));
     }
 
     @GetMapping()
     public ResponseEntity<CommonResponse<List<StudentGroupResponse>>> getStudentGroups() {
-         return ResponseEntity.ok(new CommonResponse<>(studentGroupService.getStudentGroups()));
+        log.info("request to get student groups");
+
+        List<StudentGroupResponse> response = studentGroupService.getStudentGroups();
+
+        log.info("student group successfully received");
+
+        return ResponseEntity.ok(new CommonResponse<>(response));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CommonResponse<StudentGroupResponse>> editStudentGroup(@PathVariable @Min(1) long id,
                                                                                  @Valid @RequestBody StudentGroupRequest request) {
-        return ResponseEntity.ok(new CommonResponse<>(studentGroupService.editStudentGroup(id, request)));
+        log.info("request to edit student group by id: {}", id);
+
+        StudentGroupResponse response = studentGroupService.editStudentGroup(id, request);
+
+        log.info("student group: {}, successfully edited", id);
+
+        return ResponseEntity.ok(new CommonResponse<>(response));
     }
 
     @DeleteMapping("/{id}")
     private ResponseEntity<CommonResponse<Void>> deleteStudentGroup(@PathVariable @Min(1) long id) {
+        log.info("request to delete student group by id");
+
         studentGroupService.deleteStudentGroup(id);
+
+        log.info("student group: {}, successfully deleted", id);
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }

@@ -1,6 +1,6 @@
 package com.example.edu_base.service.attendance;
 
-import com.example.edu_base.common.ServerException;
+import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.attendance.AttendanceRequest;
 import com.example.edu_base.dto.attendance.AttendanceResponse;
 

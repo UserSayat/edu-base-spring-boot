@@ -1,15 +1,9 @@
 package com.example.edu_base.entity;
 
-import jakarta.persistence.*;
-
 import java.time.ZonedDateTime;
 
-@Entity
-@Table(name = "subjects")
 public class Subject {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String subjectName;

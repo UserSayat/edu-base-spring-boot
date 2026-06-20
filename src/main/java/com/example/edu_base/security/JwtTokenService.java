@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -18,34 +20,65 @@ public class JwtTokenService {
 
     @Value("${jwt.secret}")
     private String secretKey;
-    @Value("${jwt.expiration}")
-    private long expirationTime;
+    @Value("${jwt.access-token.expiration}")
+    private long accessTokenExpiration;
+    @Value("${jwt.refresh-token.expiration}")
+    private long refreshTokenExpiration;
 
-    public String generateToken(String username) {
+    public String generateAccessToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "access");
+
+        claims.put("roles", userDetails.getAuthorities()
+                .stream()
+                .map(auth -> auth.getAuthority())
+                .toList());
+
+        return generateToken(claims, userDetails, refreshTokenExpiration);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
+        return generateToken(claims, userDetails, refreshTokenExpiration);
+    }
+
+    public String generateToken(Map<String, Object> extraClaims,
+                                UserDetails userDetails,
+                                long expiration) {
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    public boolean isAccessTokenValid(String accessToken, UserDetails userDetails) {
+        final String username = extractUsername(accessToken);
+        final String type = extractClaim(accessToken, claims -> claims.get("type", String.class));
+
+        return username.equals(userDetails.getUsername())
+                && !isTokenExpired(accessToken)
+                && "access".equals(type);
+    }
+
+    public boolean isRefreshTokenValid(String refreshToken, UserDetails userDetails) {
+        final String username = extractUsername(refreshToken);
+        final String type = extractClaim(refreshToken, claims -> claims.get("type", String.class));
+
+        return username.equals(userDetails.getUsername())
+                && !isTokenExpired(refreshToken)
+                && "refresh".equals(type);
+    }
+
     public String extractUsername(String token) {
-        return Jwts.parser()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractClaim(token, Claims::getSubject);
     }
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
-    }
-
-    public boolean validateToken(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

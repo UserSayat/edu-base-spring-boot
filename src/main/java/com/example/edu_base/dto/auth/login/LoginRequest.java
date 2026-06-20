@@ -1,4 +1,4 @@
-package com.example.edu_base.dto.auth;
+package com.example.edu_base.dto.auth.login;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

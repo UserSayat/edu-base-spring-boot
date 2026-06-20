@@ -1,10 +1,11 @@
 package com.example.edu_base.controller;
 
 import com.example.edu_base.common.CommonResponse;
-import com.example.edu_base.dto.auth.LoginRequest;
-import com.example.edu_base.dto.auth.LoginResponse;
-import com.example.edu_base.dto.auth.RegisterRequest;
-import com.example.edu_base.dto.auth.RegisterResponse;
+import com.example.edu_base.dto.auth.login.LoginRequest;
+import com.example.edu_base.dto.auth.login.LoginResponse;
+import com.example.edu_base.dto.auth.login.RefreshTokenRequest;
+import com.example.edu_base.dto.auth.register.RegisterRequest;
+import com.example.edu_base.dto.auth.register.RegisterResponse;
 import com.example.edu_base.service.auth.IAuthService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,14 @@ public class AuthController {
         log.info("request to login from user: {}", request.getUsername());
         LoginResponse response = authService.login(request);
         log.info("{}'s password passed successfully", response.getUsername());
+        return ResponseEntity.ok(new CommonResponse<>(response));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<CommonResponse<LoginResponse>> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        log.info("request to refresh token");
+        LoginResponse response = authService.refreshToken(request);
+        log.info("token successfully refreshed: {}", response.getAccessToken());
         return ResponseEntity.ok(new CommonResponse<>(response));
     }
 }

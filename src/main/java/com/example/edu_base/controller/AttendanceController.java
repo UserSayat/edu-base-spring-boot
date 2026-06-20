@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ public class AttendanceController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<AttendanceResponse>> addAttendance(@Valid @RequestBody AttendanceRequest request) {
         log.info("request to add attendance for lesson: {} ", request.getLessonId());
 
@@ -39,6 +41,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<AttendanceResponse>> getAttendanceById(@PathVariable @Min(1) long id) {
         log.info("request to get attendance by id: {}", id);
 
@@ -50,6 +53,7 @@ public class AttendanceController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<List<AttendanceResponse>>> getAllAttendances() {
         log.info("request to get attendances");
 
@@ -61,6 +65,7 @@ public class AttendanceController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<AttendanceResponse>> editAttendance(@PathVariable @Min(1) long id,
                                                                              @Valid @RequestBody AttendanceRequest request) {
 
@@ -74,6 +79,7 @@ public class AttendanceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<Void>> deleteAttendance(@PathVariable @Min(1) long id) {
         log.info("request to delete attendance by id: {}", id);
 

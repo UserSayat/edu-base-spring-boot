@@ -1,18 +1,19 @@
 spring:
   application:
     name: edu-base
+  sql:
+    init:
+      enabled: false
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3307/mydb?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  flyway:
+  liquibase:
     enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration
-    table: flyway_schema_history
+    change-log: classpath:db/changelog/db.changelog-master.yaml
 
 springdoc:
   api-docs:
@@ -29,7 +30,16 @@ springdoc:
 
 jwt:
   secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-  expiration: 86400000
+  access-token:
+    expiration: 900000 # 15 минут
+  refresh-token:
+    expiration: 604800000 # 7 дней
+
+logging:
+  level:
+    org.liquibase: DEBUG
+    liquibase: DEBUG
+    org.springframework.boot.autoconfigure.liquibase: DEBUG
 
 server:
   port: 8080

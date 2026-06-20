@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ public class LessonController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<LessonResponse>> addLesson(@Valid @RequestBody LessonRequest request) {
         log.info("request to add lesson for student group: {}", request.getStudentGroupId());
 
@@ -41,6 +43,7 @@ public class LessonController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<LessonWithAttendanceResponse>> getLessonById(@PathVariable @Min(1) long id) {
         log.info("request to get lesson by id: {}", id);
 
@@ -52,6 +55,7 @@ public class LessonController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<List<LessonResponse>>> getLessons() {
         log.info("request to get lessons");
 
@@ -63,6 +67,7 @@ public class LessonController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<LessonResponse>> editLesson(@PathVariable @Min(1) long id,
                                                                      @Valid @RequestBody LessonRequest request) {
         log.info("request to edit lesson by id: {}", id);
@@ -75,6 +80,7 @@ public class LessonController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CommonResponse<Void>> deleteLesson(@PathVariable @Min(1) long id) {
         log.info("request to delete lesson by id: {}", id);
 

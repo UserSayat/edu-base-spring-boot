@@ -1,5 +1,6 @@
 package com.example.edu_base.entity;
 
+import com.example.edu_base.common.Role;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,7 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class User implements UserDetails {
 
@@ -15,19 +17,19 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private boolean active;
-    private String role;
+    private Set<Role> roles;
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
 
     public User() {
     }
 
-    public User(Long id, String username, String password, boolean active, String role, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+    public User(Long id, String username, String password, boolean active, Set<Role> roles, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.active = active;
-        this.role = role;
+        this.roles = roles;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -48,12 +50,12 @@ public class User implements UserDetails {
         this.active = active;
     }
 
-    public String getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public ZonedDateTime getCreatedAt() {
@@ -74,7 +76,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE" + this.role));
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -104,6 +108,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.active;
+        return active;
     }
 }

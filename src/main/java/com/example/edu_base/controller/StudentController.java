@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RequestMapping("api/students")
 public class StudentController {
+    //TODO Студент видит список СВОЕЙ группы, данные о посещаемости СВОЕЙ группы
 
     private final IStudentService studentService;
 
@@ -41,6 +43,7 @@ public class StudentController {
     }
 
     @GetMapping("/group/{id}")
+    @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public ResponseEntity<CommonResponse<List<StudentResponse>>> getStudentsByGroup(@PathVariable @Min(1) long id) {
         log.info("request to get students by student group: {}", id);
 

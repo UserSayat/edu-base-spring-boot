@@ -22,7 +22,6 @@
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<jjwt.version>0.12.6</jjwt.version>
-		<flyway.version>11.14.1</flyway.version>
 	</properties>
 
 	<dependencies>
@@ -54,16 +53,9 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Flyway -->
 		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-			<version>${flyway.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-mysql</artifactId>
-			<version>${flyway.version}</version>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
 		</dependency>
 
 		<!-- JWT -->
@@ -134,9 +126,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.14.0</version>
 				<configuration>
-					<source>24</source>
-					<target>24</target>
-					<release>24</release>
+					<source>21</source>
+					<target>21</target>
+					<release>21</release>
 					<fork>true</fork>
 					<annotationProcessorPaths>
 						<path>

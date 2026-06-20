@@ -3,6 +3,8 @@ package com.example.edu_base.controller;
 import com.example.edu_base.common.CommonResponse;
 import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.exception.EntityNotFoundException;
+import com.example.edu_base.exception.UnauthenticatedException;
+import com.example.edu_base.exception.UnauthorizedException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -81,11 +83,31 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<CommonResponse<?>> handleUnauthenticatedException(UnauthenticatedException e) {
+        log.error("authentication error: ", e);
+        String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+        CommonResponse<?> response = new CommonResponse<>(10006, message, null);
+        response.setSuccess(false);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<CommonResponse<?>> handleUnauthorizedException(UnauthorizedException e) {
+        log.error("authorization error: ", e);
+        String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+        CommonResponse<?> response = new CommonResponse<>(10007, message, null);
+        response.setSuccess(false);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<?>> handleException(Exception e) {
         log.error("unexpected error occurred while processing request: ", e);
         String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-        CommonResponse<?> response = new CommonResponse<>(10006, message, null);
+        CommonResponse<?> response = new CommonResponse<>(10008, message, null);
         response.setSuccess(false);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(response);

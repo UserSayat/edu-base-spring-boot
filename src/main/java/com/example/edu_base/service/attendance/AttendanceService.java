@@ -96,9 +96,10 @@ public class AttendanceService implements IAttendanceService {
     @Override
     public void deleteAttendance(long id) throws ServerException {
         log.info("deleting attendance by id: {}", id);
-        boolean deleted = attendanceRepository.deleteById(id);
-        if (!deleted) {
-            throw new ServerException("attendance wasn't delete", 6005, null);
+        try {
+            attendanceRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ServerException("attendance wasn't delete", e, 6005, null);
         }
     }
 

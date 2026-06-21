@@ -118,10 +118,12 @@ public class StudentService implements IStudentService {
     @Override
     public void deleteStudent(long id) throws ServerException {
         log.info("deleting student by id: {}", id);
-        boolean deletedStudent = studentRepository.deleteById(id);
-        attendanceRepository.deleteByStudentId(id);
-        if (!deletedStudent)
-            throw new ServerException("student wasn't delete", 2005, null);
+        try {
+            boolean deletedStudent = studentRepository.deleteById(id);
+            attendanceRepository.deleteByStudentId(id);
+        } catch (Exception e) {
+            throw new ServerException("student wasn't delete", e, 2005, null);
+        }
     }
 
     public StudentResponse toStudentResponse(Student student) {

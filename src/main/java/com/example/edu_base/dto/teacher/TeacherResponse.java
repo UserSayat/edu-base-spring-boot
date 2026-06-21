@@ -17,7 +17,7 @@ public class TeacherResponse {
     private String firstName;
     private String middleName;
 
-    private ZonedDateTime created_at;
-    private ZonedDateTime updated_at;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
 
 }

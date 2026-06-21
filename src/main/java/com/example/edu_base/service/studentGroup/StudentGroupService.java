@@ -93,13 +93,15 @@ public class StudentGroupService implements IStudentGroupService {
     @Override
     public void deleteStudentGroup(long id) throws ServerException {
         log.info("deleting student group by id: {}", id);
-        List<Student> students = studentRepository.findByStudentGroupId(id);
-        if (!students.isEmpty())
-            throw new IllegalArgumentException("group is not empty, can not delete");
+        try {
+            List<Student> students = studentRepository.findByStudentGroupId(id);
+            if (!students.isEmpty())
+                throw new IllegalArgumentException("group is not empty, can not delete");
 
-        boolean deleted = studentGroupRepository.deleteById(id);
-        if (!deleted)
-            throw new ServerException("student group wasn't delete", 1005, null);
+            boolean deleted = studentGroupRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new ServerException("student group wasn't delete", e, 1005, null);
+        }
     }
 
     public StudentGroupResponse toStudentGroupResponse(StudentGroup groupEntity) {

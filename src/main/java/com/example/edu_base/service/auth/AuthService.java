@@ -53,7 +53,7 @@ public class AuthService implements IAuthService {
                 request.getUsername(),
                 passwordEncoder.encode(request.getPassword()),
                 true,
-                Set.of(Role.ROLE_STUDENT),
+                Set.of(Role.valueOf(request.getRole())),
                 ZonedDateTime.now(ZoneOffset.UTC),
                 ZonedDateTime.now(ZoneOffset.UTC)
                 );

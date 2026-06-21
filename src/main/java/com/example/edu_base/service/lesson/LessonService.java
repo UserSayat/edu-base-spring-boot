@@ -135,10 +135,10 @@ public class LessonService implements ILessonService {
     @Override
     public void deleteLesson(long id) throws ServerException {
         log.info("deleting lesson by id: {}", id);
-        try {
-            boolean deleted = lessonRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new ServerException("lesson wasn't delete", e, 5005, null);
+
+        if (!lessonRepository.deleteById(id)) {
+            log.warn("failed to delete lesson by id: {}", id);
+            throw new ServerException("lesson wasn't delete", 5005, null);
         }
     }
 

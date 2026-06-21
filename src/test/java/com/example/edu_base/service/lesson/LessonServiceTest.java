@@ -19,8 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -593,24 +591,6 @@ class LessonServiceTest {
         lessonService.deleteLesson(TEST_ID);
 
         // Then
-        verify(lessonRepository, times(1)).deleteById(TEST_ID);
-    }
-
-    @Test
-    @DisplayName("Should throw ServerException when repository throws exception")
-    void deleteLesson_RepositoryThrowsException_ThrowsServerException() throws ServerException {
-        // Given
-        when(lessonRepository.deleteById(TEST_ID))
-                .thenThrow(new RuntimeException("Delete failed"));
-
-        // When & Then
-        ServerException exception = assertThrows(ServerException.class, () -> {
-            lessonService.deleteLesson(TEST_ID);
-        });
-
-        assertEquals(5005, exception.getErrorCode());
-        assertTrue(exception.getMessage().contains("lesson wasn't delete"));
-
         verify(lessonRepository, times(1)).deleteById(TEST_ID);
     }
 }

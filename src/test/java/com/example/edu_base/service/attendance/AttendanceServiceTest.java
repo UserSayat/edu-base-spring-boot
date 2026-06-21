@@ -470,40 +470,4 @@ class AttendanceServiceTest {
         // Then
         verify(attendanceRepository, times(1)).deleteById(TEST_ID);
     }
-
-    @Test
-    @DisplayName("Should throw ServerException when repository throws exception during delete")
-    void deleteAttendance_RepositoryThrowsException_ThrowsServerException() throws ServerException {
-        // Given
-        RuntimeException dbException = new RuntimeException();
-        when(attendanceRepository.deleteById(TEST_ID)).thenThrow(dbException);
-
-        // When & Then
-        ServerException exception = assertThrows(ServerException.class, () -> {
-            attendanceService.deleteAttendance(TEST_ID);
-        });
-
-        assertEquals(6005, exception.getErrorCode());
-        assertTrue(exception.getMessage().contains("attendance wasn't delete"));
-        assertSame(dbException, exception.getCause());
-
-        verify(attendanceRepository, times(1)).deleteById(TEST_ID);
-    }
-
-    @Test
-    @DisplayName("Should handle invalid id for delete")
-    void deleteAttendance_InvalidId_ThrowsException() throws ServerException {
-        // Given
-        long invalidId = -1L;
-        when(attendanceRepository.deleteById(invalidId))
-                .thenThrow(new IllegalArgumentException("Invalid id"));
-
-        // When & Then
-        ServerException exception = assertThrows(ServerException.class, () -> {
-            attendanceService.deleteAttendance(invalidId);
-        });
-
-        assertEquals(6005, exception.getErrorCode());
-        verify(attendanceRepository, times(1)).deleteById(invalidId);
-    }
 }

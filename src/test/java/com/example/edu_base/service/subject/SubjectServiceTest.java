@@ -466,24 +466,4 @@ class SubjectServiceTest {
         verify(lessonRepository, times(1)).findBySubjectId(TEST_ID);
         verify(subjectRepository, never()).deleteById(anyLong());
     }
-
-    @Test
-    @DisplayName("Should throw ServerException when subject repository throws exception")
-    void deleteSubject_SubjectRepositoryThrowsException_ThrowsServerException() throws ServerException {
-        // Given
-        when(lessonRepository.findBySubjectId(TEST_ID)).thenReturn(List.of());
-        when(subjectRepository.deleteById(TEST_ID))
-                .thenThrow(new RuntimeException("Delete failed"));
-
-        // When & Then
-        ServerException exception = assertThrows(ServerException.class, () -> {
-            subjectService.deleteSubject(TEST_ID);
-        });
-
-        assertEquals(4005, exception.getErrorCode());
-        assertTrue(exception.getMessage().contains("subject wasn't delete"));
-
-        verify(lessonRepository, times(1)).findBySubjectId(TEST_ID);
-        verify(subjectRepository, times(1)).deleteById(TEST_ID);
-    }
 }

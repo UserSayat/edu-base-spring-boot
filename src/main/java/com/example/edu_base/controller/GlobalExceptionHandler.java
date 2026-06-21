@@ -9,6 +9,12 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -83,7 +89,7 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(UnauthenticatedException.class)
+    @ExceptionHandler({UnauthenticatedException.class, UsernameNotFoundException.class})
     public ResponseEntity<CommonResponse<?>> handleUnauthenticatedException(UnauthenticatedException e) {
         log.error("authentication error: ", e);
         String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
@@ -93,7 +99,8 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
+    @ExceptionHandler({UnauthorizedException.class, BadCredentialsException.class, LockedException.class,
+            DisabledException.class, InsufficientAuthenticationException.class, AccessDeniedException.class})
     public ResponseEntity<CommonResponse<?>> handleUnauthorizedException(UnauthorizedException e) {
         log.error("authorization error: ", e);
         String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();

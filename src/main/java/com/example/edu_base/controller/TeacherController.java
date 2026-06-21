@@ -28,6 +28,7 @@ public class TeacherController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<TeacherResponse>> addTeacher(@Valid @RequestBody TeacherRequest request) {
         log.info("request to add teacher: {} {} {}",
                 request.getLastName(),
@@ -54,7 +55,6 @@ public class TeacherController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER')")
     public ResponseEntity<CommonResponse<List<TeacherResponse>>> getTeachers() {
         log.info("request to get teachers");
 
@@ -66,6 +66,7 @@ public class TeacherController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<TeacherResponse>> editTeacher(@PathVariable @Min(1) long id,
                                                                        @Valid @RequestBody TeacherRequest request) {
         log.info("request to edit teacher by id: {}", id);
@@ -78,7 +79,8 @@ public class TeacherController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CommonResponse<Void>> deleteStudent(@PathVariable @Min(1) long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Void>> deleteTeacher(@PathVariable @Min(1) long id) {
         log.info("request to delete teacher by id: {}", id);
 
         teacherService.deleteTeacher(id);

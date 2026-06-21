@@ -1,0 +1,1 @@
+ALTER TABLE students DROP CONSTRAINT student_status;

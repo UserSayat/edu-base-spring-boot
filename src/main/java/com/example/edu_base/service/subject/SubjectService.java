@@ -100,10 +100,9 @@ public class SubjectService implements ISubjectService {
         if (!lessons.isEmpty())
             throw new IllegalArgumentException("can not delete subject while lessons with it exist");
 
-        try {
-            boolean deleted = subjectRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new ServerException("subject wasn't delete", e, 4005, null);
+        if (!subjectRepository.deleteById(id)) {
+            log.warn("failed to delete subject by id: {}", id);
+            throw new ServerException("subject wasn't delete", 4005, null);
         }
     }
 

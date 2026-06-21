@@ -30,7 +30,7 @@ public class LessonController {
     }
 
     @PostMapping()
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<CommonResponse<LessonResponse>> addLesson(@Valid @RequestBody LessonRequest request) {
         log.info("request to add lesson for student group: {}", request.getStudentGroupId());
 
@@ -43,7 +43,7 @@ public class LessonController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<CommonResponse<LessonWithAttendanceResponse>> getLessonById(@PathVariable @Min(1) long id) {
         log.info("request to get lesson by id: {}", id);
 
@@ -55,7 +55,7 @@ public class LessonController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<CommonResponse<List<LessonResponse>>> getLessons() {
         log.info("request to get lessons");
 
@@ -67,7 +67,7 @@ public class LessonController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<CommonResponse<LessonResponse>> editLesson(@PathVariable @Min(1) long id,
                                                                      @Valid @RequestBody LessonRequest request) {
         log.info("request to edit lesson by id: {}", id);
@@ -80,7 +80,7 @@ public class LessonController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<CommonResponse<Void>> deleteLesson(@PathVariable @Min(1) long id) {
         log.info("request to delete lesson by id: {}", id);
 

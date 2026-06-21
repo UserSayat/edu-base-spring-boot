@@ -7,7 +7,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EduBaseApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(EduBaseApplication.class, args);
+		var context = SpringApplication.run(EduBaseApplication.class, args);
+		try {
+			System.out.println("studentGroupService: " + context.getBean("studentGroupService"));
+			System.out.println("studentGroupController: " + context.getBean("studentGroupController"));
+		} catch (Exception e) {
+			System.err.println("Bean not found: " + e.getMessage());
+		}
 	}
 
 }

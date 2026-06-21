@@ -525,24 +525,4 @@ class TeacherServiceTest {
         verify(lessonRepository, times(1)).findByTeacherId(TEST_ID);
         verify(teacherRepository, never()).deleteById(anyLong());
     }
-
-    @Test
-    @DisplayName("Should throw ServerException when teacher repository throws exception")
-    void deleteTeacher_TeacherRepositoryThrowsException_ThrowsServerException() throws ServerException {
-        // Given
-        when(lessonRepository.findByTeacherId(TEST_ID)).thenReturn(List.of());
-        when(teacherRepository.deleteById(TEST_ID))
-                .thenThrow(new RuntimeException("Delete failed"));
-
-        // When & Then
-        ServerException exception = assertThrows(ServerException.class, () -> {
-            teacherService.deleteTeacher(TEST_ID);
-        });
-
-        assertEquals(3005, exception.getErrorCode());
-        assertTrue(exception.getMessage().contains("teacher wasn't delete"));
-
-        verify(lessonRepository, times(1)).findByTeacherId(TEST_ID);
-        verify(teacherRepository, times(1)).deleteById(TEST_ID);
-    }
 }

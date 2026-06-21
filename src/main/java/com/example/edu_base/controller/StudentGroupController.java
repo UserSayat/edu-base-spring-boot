@@ -28,6 +28,7 @@ public class StudentGroupController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<StudentGroupResponse>> addStudentGroup(@Valid @RequestBody StudentGroupRequest request) {
         log.info("request to add student group: {}", request.getGroupName());
 
@@ -40,6 +41,7 @@ public class StudentGroupController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<CommonResponse<StudentGroupResponse>> getStudentGroupById(@PathVariable @Min(1) long id) {
         log.info("request to get student group by id: {}", id);
 
@@ -51,7 +53,7 @@ public class StudentGroupController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
     public ResponseEntity<CommonResponse<List<StudentGroupResponse>>> getStudentGroups() {
         log.info("request to get student groups");
 
@@ -63,6 +65,7 @@ public class StudentGroupController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<StudentGroupResponse>> editStudentGroup(@PathVariable @Min(1) long id,
                                                                                  @Valid @RequestBody StudentGroupRequest request) {
         log.info("request to edit student group by id: {}", id);
@@ -75,7 +78,8 @@ public class StudentGroupController {
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<CommonResponse<Void>> deleteStudentGroup(@PathVariable @Min(1) long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CommonResponse<Void>> deleteStudentGroup(@PathVariable @Min(1) long id) {
         log.info("request to delete student group by id");
 
         studentGroupService.deleteStudentGroup(id);

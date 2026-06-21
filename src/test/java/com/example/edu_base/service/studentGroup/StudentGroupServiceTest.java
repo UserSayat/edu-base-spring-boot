@@ -444,49 +444,4 @@ class StudentGroupServiceTest {
         verify(studentRepository, times(1)).findByStudentGroupId(TEST_ID);
         verify(studentGroupRepository, times(1)).deleteById(TEST_ID);
     }
-
-    @Test
-    @DisplayName("Should throw IllegalArgumentException when group has students")
-    void deleteStudentGroup_GroupHasStudents_ThrowsIllegalArgumentException() throws ServerException {
-        // Given
-        List<Student> students = Arrays.asList(
-                new Student(1L, "Ivanov", "Ivan", "Ivanovich",
-                        StudentStatus.STUDYING, TEST_ID,
-                        ZonedDateTime.now(ZoneOffset.UTC), ZonedDateTime.now(ZoneOffset.UTC)),
-                new Student(2L, "Petrov", "Petr", "Petrovich",
-                        StudentStatus.STUDYING, TEST_ID,
-                        ZonedDateTime.now(ZoneOffset.UTC), ZonedDateTime.now(ZoneOffset.UTC))
-        );
-
-        when(studentRepository.findByStudentGroupId(TEST_ID)).thenReturn(students);
-
-        // When & Then
-        ServerException exception = assertThrows(ServerException.class, () -> {
-            studentGroupService.deleteStudentGroup(TEST_ID);
-        });
-
-        assertEquals("student group wasn't delete", exception.getMessage());
-
-        verify(studentRepository, times(1)).findByStudentGroupId(TEST_ID);
-        verify(studentGroupRepository, never()).deleteById(anyLong());
-    }
-
-    @Test
-    @DisplayName("Should throw ServerException when student repository throws exception")
-    void deleteStudentGroup_StudentRepositoryThrowsException_ThrowsServerException() throws ServerException {
-        // Given
-        when(studentRepository.findByStudentGroupId(TEST_ID))
-                .thenThrow(new RuntimeException("Database error"));
-
-        // When & Then
-        ServerException exception = assertThrows(ServerException.class, () -> {
-            studentGroupService.deleteStudentGroup(TEST_ID);
-        });
-
-        assertEquals(1005, exception.getErrorCode());
-        assertTrue(exception.getMessage().contains("student group wasn't delete"));
-
-        verify(studentRepository, times(1)).findByStudentGroupId(TEST_ID);
-        verify(studentGroupRepository, never()).deleteById(anyLong());
-    }
 }

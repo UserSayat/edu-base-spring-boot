@@ -28,6 +28,7 @@ public class SubjectController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<SubjectResponse>> addSubject(@Valid @RequestBody SubjectRequest request) {
         log.info("request to add subject: {}", request.getSubjectName());
 
@@ -51,7 +52,6 @@ public class SubjectController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER')")
     public ResponseEntity<CommonResponse<List<SubjectResponse>>> getSubjects() {
         log.info("request to get subjects");
 
@@ -63,6 +63,7 @@ public class SubjectController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<SubjectResponse>> editSubject(@PathVariable @Min(1) long id,
                                                                        @Valid @RequestBody SubjectRequest request) {
         log.info("request to edit subject by id: {}", id);
@@ -75,6 +76,7 @@ public class SubjectController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<Void>> deleteSubject(@PathVariable @Min(1) long id) {
         log.info("request to delete subject by id: {}", id);
 

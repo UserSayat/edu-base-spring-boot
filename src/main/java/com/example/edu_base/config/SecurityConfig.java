@@ -34,14 +34,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(
-                                "/api/attendances/**",
-                                "/api/lessons/**",
-                                "/api/students/**",
-                                "/api/groups/**",
-                                "/api/subjects/**",
-                                "/api/teachers/**",
+                                "/api/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()

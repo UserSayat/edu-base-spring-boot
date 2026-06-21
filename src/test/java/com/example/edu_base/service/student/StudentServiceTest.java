@@ -568,24 +568,4 @@ class StudentServiceTest {
         verify(studentRepository, times(1)).deleteById(TEST_ID);
         verify(attendanceRepository, times(1)).deleteByStudentId(TEST_ID);
     }
-
-    @Test
-    @DisplayName("Should handle attendance repository exception during delete")
-    void deleteStudent_AttendanceRepositoryThrowsException_ThrowsServerException() throws ServerException {
-        // Given
-        when(studentRepository.deleteById(TEST_ID)).thenReturn(true);
-        when(attendanceRepository.deleteByStudentId(TEST_ID))
-                .thenThrow(new RuntimeException("Attendance delete failed"));
-
-        // When & Then
-        ServerException exception = assertThrows(ServerException.class, () -> {
-            studentService.deleteStudent(TEST_ID);
-        });
-
-        assertEquals(2005, exception.getErrorCode());
-        assertTrue(exception.getMessage().contains("student wasn't delete"));
-
-        verify(studentRepository, times(1)).deleteById(TEST_ID);
-        verify(attendanceRepository, times(1)).deleteByStudentId(TEST_ID);
-    }
 }

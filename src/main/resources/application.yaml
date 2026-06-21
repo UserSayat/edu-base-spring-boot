@@ -6,14 +6,15 @@ spring:
       enabled: false
 
   datasource:
-    url: jdbc:mysql://localhost:3307/mydb?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: password
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  liquibase:
-    enabled: true
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+flyway:
+  enabled: true
+  locations: classpath:db/migration
+  table: flyway_schema_history
 
 springdoc:
   api-docs:

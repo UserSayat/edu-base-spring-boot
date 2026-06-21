@@ -1,6 +1,3 @@
--- liquibase formatted sql
-
--- changeset sayat:1
 CREATE TABLE IF NOT EXISTS student_groups (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     group_name VARCHAR(20) NOT NULL UNIQUE,
@@ -8,7 +5,6 @@ CREATE TABLE IF NOT EXISTS student_groups (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- changeset sayat:2
 CREATE TABLE IF NOT EXISTS students (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     last_name VARCHAR(20) NOT NULL,
@@ -20,7 +16,6 @@ CREATE TABLE IF NOT EXISTS students (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- changeset sayat:3
 CREATE TABLE IF NOT EXISTS teachers (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     last_name VARCHAR(20) NOT NULL,
@@ -30,7 +25,6 @@ CREATE TABLE IF NOT EXISTS teachers (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- changeset sayat:4
 CREATE TABLE IF NOT EXISTS subjects (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     subject_name VARCHAR(20) NOT NULL UNIQUE,
@@ -38,7 +32,6 @@ CREATE TABLE IF NOT EXISTS subjects (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- changeset sayat:5
 CREATE TABLE IF NOT EXISTS lessons (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     subject_id BIGINT NOT NULL,
@@ -50,7 +43,6 @@ CREATE TABLE IF NOT EXISTS lessons (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- changeset sayat:6
 CREATE TABLE IF NOT EXISTS attendances (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     lesson_id BIGINT NOT NULL,
@@ -59,45 +51,3 @@ CREATE TABLE IF NOT EXISTS attendances (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- changeset sayat:7
-ALTER TABLE students
-    ADD CONSTRAINT fk_student_group
-    FOREIGN KEY (student_group_id) REFERENCES groups(id) ON DELETE RESTRICT;
-
--- changeset sayat:8
-ALTER TABLE lessons
-    ADD CONSTRAINT fk_lesson_subject
-    FOREIGN KEY (subject_id) REFERENCES disciplines(id) ON DELETE RESTRICT,
-    ADD CONSTRAINT fk_lesson_teacher
-    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE RESTRICT,
-    ADD CONSTRAINT fk_lesson_group
-    FOREIGN KEY (student_group_id) REFERENCES groups(id) ON DELETE RESTRICT;
-
--- changeset sayat:9
-ALTER TABLE attendance
-    ADD CONSTRAINT fk_attendance_lesson
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_attendance_student
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE;
-
--- changeset sayat:10
-ALTER TABLE attendance
-    ADD CONSTRAINT unique_lesson_student
-    UNIQUE (lesson_id, student_id);
-
-
--- changeset sayat:11
-CREATE INDEX idx_lesson_date ON lessons(date);
-
--- changeset sayat:12
-CREATE INDEX idx_lesson_teacher_date ON lessons(teacher_id, date);
-
--- changeset sayat:13
-CREATE INDEX idx_lesson_group_date ON lessons(group_id, date);
-
--- changeset sayat:14
-CREATE INDEX idx_student_group ON students(group_id);
-
--- changeset sayat:15
-CREATE INDEX idx_attendance_lesson ON attendance(lesson_id);

@@ -13,8 +13,10 @@ import com.example.edu_base.repository.user.IUserRepository;
 import com.example.edu_base.security.JwtTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -77,9 +79,9 @@ public class AuthService implements IAuthService {
 //                throw new UnauthorizedException("Wrong login or password");
 //            } Теперь это делает authenticationManager.authenticate(...)
 
-            if (user == null) {
-                log.warn("User: {}, doesn't exist, or password is incorrect", request.getUsername());
-                throw new UnauthenticatedException("Wrong login or password");
+            if (!user.isActive()) {
+                log.warn("User account is disabled: {}", user.getUsername());
+                throw new UnauthenticatedException("User account is disabled");
             }
 
             String accessToken = jwtTokenService.generateAccessToken(user);
@@ -91,7 +93,11 @@ public class AuthService implements IAuthService {
                             .collect(Collectors.toSet()),
                     accessToken,
                     refreshToken);
-        } catch (Exception e) {
+        } catch (BadCredentialsException | UsernameNotFoundException e) {
+            log.warn("Invalid credentials for user: {}", request.getUsername());
+            throw new UnauthenticatedException("Wrong login or password");
+
+        }catch (Exception e) {
             String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
             log.warn("User: {}, not found", request.getUsername(), e);
             throw new UnauthenticatedException(message, e, 20001, null);

@@ -104,10 +104,10 @@ public class UserRepository implements IUserRepository {
     @Override
     public void saveRoleToUser(long userId, Role role) {
         String sql = """
-                INSERT INTO user_roles ur (user_id, role_id)
-                VALUES (?, (SELECT r.id FROM roles r WHERE r.name = ?))
+                INSERT INTO user_roles (user_id, role_id)
+                VALUES (?, (SELECT id FROM roles WHERE name = ?))
                 """;
 
-        jdbcTemplate.update(sql, userId, role);
+        jdbcTemplate.update(sql, userId, role.name());
     }
 }

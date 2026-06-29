@@ -82,7 +82,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServerException.class)
     public ResponseEntity<CommonResponse<?>> handleServerException(ServerException e) {
         log.error("database interaction failure while performing an operation: ", e);
-        String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
         CommonResponse<?> response = new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails());
         response.setSuccess(false);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT)

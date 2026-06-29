@@ -97,10 +97,7 @@ public class StudentGroupService implements IStudentGroupService {
         if (!students.isEmpty())
             throw new IllegalArgumentException("group is not empty, can not delete");
 
-        if (!studentGroupRepository.deleteById(id)) {
-            log.warn("failed to delete student group by id: {}", id);
-            throw new ServerException("student group wasn't delete", 1005, null);
-        }
+        studentGroupRepository.deleteById(id);
     }
 
     public StudentGroupResponse toStudentGroupResponse(StudentGroup groupEntity) {

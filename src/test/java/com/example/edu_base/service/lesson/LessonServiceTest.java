@@ -239,7 +239,7 @@ class LessonServiceTest {
         List<Long> studentIds = Arrays.asList(1L, 2L, 3L);
 
         when(lessonRepository.findById(TEST_ID)).thenReturn(Optional.of(lesson));
-        when(lessonRepository.findStudentsByLessonId(TEST_ID)).thenReturn(studentIds);
+        when(lessonRepository.findStudentsByStudentGroupId(TEST_ID)).thenReturn(studentIds);
 
         // When
         LessonWithAttendanceResponse response = lessonService.getLessonById(TEST_ID);
@@ -252,7 +252,7 @@ class LessonServiceTest {
         assertEquals(3, response.getAttendance().size());
 
         verify(lessonRepository, times(1)).findById(TEST_ID);
-        verify(lessonRepository, times(1)).findStudentsByLessonId(TEST_ID);
+        verify(lessonRepository, times(1)).findStudentsByStudentGroupId(TEST_ID);
         verify(attendanceRepository, times(1)).findByStudentId(1L);
         verify(attendanceRepository, times(1)).findByStudentId(2L);
         verify(attendanceRepository, times(1)).findByStudentId(3L);
@@ -263,7 +263,7 @@ class LessonServiceTest {
     void getLessonById_NoStudents_ReturnsEmptyAttendance() throws ServerException {
         // Given
         when(lessonRepository.findById(TEST_ID)).thenReturn(Optional.of(lesson));
-        when(lessonRepository.findStudentsByLessonId(TEST_ID)).thenReturn(List.of());
+        when(lessonRepository.findStudentsByStudentGroupId(TEST_ID)).thenReturn(List.of());
 
         // When
         LessonWithAttendanceResponse response = lessonService.getLessonById(TEST_ID);
@@ -273,7 +273,7 @@ class LessonServiceTest {
         assertTrue(response.getAttendance().isEmpty());
 
         verify(lessonRepository, times(1)).findById(TEST_ID);
-        verify(lessonRepository, times(1)).findStudentsByLessonId(TEST_ID);
+        verify(lessonRepository, times(1)).findStudentsByStudentGroupId(TEST_ID);
         verify(attendanceRepository, never()).findByStudentId(anyLong());
     }
 
@@ -292,7 +292,7 @@ class LessonServiceTest {
         assertEquals(5002, exception.getErrorCode());
 
         verify(lessonRepository, times(1)).findById(TEST_ID);
-        verify(lessonRepository, never()).findStudentsByLessonId(anyLong());
+        verify(lessonRepository, never()).findStudentsByStudentGroupId(anyLong());
         verify(attendanceRepository, never()).findByStudentId(anyLong());
     }
 
@@ -301,7 +301,7 @@ class LessonServiceTest {
     void getLessonById_FindStudentsFails_ThrowsServerException() throws ServerException {
         // Given
         when(lessonRepository.findById(TEST_ID)).thenReturn(Optional.of(lesson));
-        when(lessonRepository.findStudentsByLessonId(TEST_ID))
+        when(lessonRepository.findStudentsByStudentGroupId(TEST_ID))
                 .thenThrow(new RuntimeException("Database error"));
 
         // When & Then
@@ -313,7 +313,7 @@ class LessonServiceTest {
         assertTrue(exception.getMessage().contains("Database error"));
 
         verify(lessonRepository, times(1)).findById(TEST_ID);
-        verify(lessonRepository, times(1)).findStudentsByLessonId(TEST_ID);
+        verify(lessonRepository, times(1)).findStudentsByStudentGroupId(TEST_ID);
         verify(attendanceRepository, never()).findByStudentId(anyLong());
     }
 
@@ -324,7 +324,7 @@ class LessonServiceTest {
         List<Long> studentIds = Arrays.asList(1L, 2L);
 
         when(lessonRepository.findById(TEST_ID)).thenReturn(Optional.of(lesson));
-        when(lessonRepository.findStudentsByLessonId(TEST_ID)).thenReturn(studentIds);
+        when(lessonRepository.findStudentsByStudentGroupId(TEST_ID)).thenReturn(studentIds);
         when(attendanceRepository.findByStudentId(1L))
                 .thenThrow(new RuntimeException("Attendance check failed"));
 
@@ -337,7 +337,7 @@ class LessonServiceTest {
         assertTrue(exception.getMessage().contains("Attendance check failed"));
 
         verify(lessonRepository, times(1)).findById(TEST_ID);
-        verify(lessonRepository, times(1)).findStudentsByLessonId(TEST_ID);
+        verify(lessonRepository, times(1)).findStudentsByStudentGroupId(TEST_ID);
         verify(attendanceRepository, times(1)).findByStudentId(1L);
     }
 

@@ -15,5 +15,5 @@ public interface ILessonRepository {
     List<Lesson> findByTeacherId(long id);
     List<Lesson> findBySubjectId(long id);
     Optional<Lesson> findByDateAndPairNumber(LocalDate date, long pairNumber);
-    List<Long> findStudentsByLessonId(long id);
+    List<Long> findStudentsByStudentGroupId(long id);
 }

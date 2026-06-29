@@ -64,7 +64,7 @@ public class Student {
         this.middleName = middleName;
     }
 
-    public StudentStatus getStatus() {
+    public StudentStatus getStudentStatus() {
         return studentStatus;
     }
 

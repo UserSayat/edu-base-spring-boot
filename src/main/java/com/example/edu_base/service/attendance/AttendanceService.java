@@ -97,10 +97,7 @@ public class AttendanceService implements IAttendanceService {
     public void deleteAttendance(long id) throws ServerException {
         log.info("deleting attendance by id: {}", id);
 
-        if (!attendanceRepository.deleteById(id)) {
-            log.warn("failed to delete attendance by id: {}", id);
-            throw new ServerException("attendance wasn't delete", 6005, null);
-        }
+        attendanceRepository.deleteById(id);
     }
 
     public AttendanceResponse toAttendanceResponse(Attendance attendance) {

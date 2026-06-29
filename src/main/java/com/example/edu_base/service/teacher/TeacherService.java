@@ -110,10 +110,7 @@ public class TeacherService implements ITeacherService {
             throw new IllegalArgumentException("can not delete teacher while lessons with him exist");
 
 
-        if (!teacherRepository.deleteById(id)) {
-            log.warn("failed to delete teacher by id: {}", id);
-            throw new ServerException("teacher wasn't delete", 3005, null);
-        }
+        teacherRepository.deleteById(id);
     }
 
     public TeacherResponse toTeacherResponse(Teacher teacher) {

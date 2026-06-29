@@ -188,7 +188,7 @@ class StudentServiceTest {
                             saved.getLastName(),
                             saved.getFirstName(),
                             saved.getMiddleName(),
-                            saved.getStatus(),
+                            saved.getStudentStatus(),
                             saved.getStudentGroupId(),
                             saved.getCreatedAt(),
                             saved.getUpdatedAt()
@@ -533,7 +533,7 @@ class StudentServiceTest {
                 student.getLastName().equals("NewLastName") &&
                         student.getFirstName().equals("NewFirstName") &&
                         student.getMiddleName().equals("NewMiddleName") &&
-                        student.getStatus() == StudentStatus.EXPELLED &&
+                        student.getStudentStatus() == StudentStatus.EXPELLED &&
                         student.getStudentGroupId() == 200L
         ));
     }

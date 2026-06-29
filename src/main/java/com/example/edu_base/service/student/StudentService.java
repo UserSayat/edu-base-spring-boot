@@ -16,6 +16,7 @@ import com.example.edu_base.repository.student.IStudentRepository;
 import com.example.edu_base.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -115,22 +116,14 @@ public class StudentService implements IStudentService {
         }
     }
 
+    @Transactional
     @Override
     public void deleteStudent(long id) throws ServerException {
         log.info("deleting student by id: {}", id);
 
-        boolean deletedStudent = studentRepository.deleteById(id);
+        studentRepository.deleteById(id);
 
-        if (!deletedStudent) {
-            log.warn("failed to delete student by id: {}", id);
-            throw new ServerException("student wasn't delete", 2005, null);
-        }
-
-        try {
-            attendanceRepository.deleteByStudentId(id);
-        } catch (Exception e) {
-            log.warn("student: {} - attendance wasn't delete", id);
-        }
+        attendanceRepository.deleteByStudentId(id);
     }
 
     public StudentResponse toStudentResponse(Student student) {
@@ -143,7 +136,7 @@ public class StudentService implements IStudentService {
                 student.getLastName(),
                 student.getFirstName(),
                 student.getMiddleName(),
-                student.getStatus(),
+                student.getStudentStatus(),
                 new StudentGroupResponse(studentGroup.getId(),
                         studentGroup.getGroupName(),
                         studentGroup.getCreatedAt(),

@@ -50,7 +50,7 @@ public class StudentRepository implements IStudentRepository {
             ps.setString(1, student.getLastName());
             ps.setString(2, student.getFirstName());
             ps.setString(3, student.getMiddleName());
-            ps.setString(4, student.getStatus().name());
+            ps.setString(4, student.getStudentStatus().name());
             ps.setLong(5,student.getStudentGroupId());
             ps.setObject(6, student.getCreatedAt());
             ps.setObject(7, student.getUpdatedAt());
@@ -82,7 +82,7 @@ public class StudentRepository implements IStudentRepository {
                 student.getLastName(),
                 student.getFirstName(),
                 student.getMiddleName(),
-                student.getStatus().name(),
+                student.getStudentStatus().name(),
                 student.getStudentGroupId(),
                 student.getUpdatedAt(),
                 student.getId());

@@ -73,7 +73,7 @@ public class LessonService implements ILessonService {
             Lesson lesson = lessonRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
 
-            List<Long> studentIds = lessonRepository.findStudentsByLessonId(id);
+            List<Long> studentIds = lessonRepository.findStudentsByStudentGroupId(lesson.getStudentGroupId());
 
             List<Pair<Long, Boolean>> attendance = new ArrayList<>();
             for (Long studentId : studentIds) {
@@ -136,10 +136,7 @@ public class LessonService implements ILessonService {
     public void deleteLesson(long id) throws ServerException {
         log.info("deleting lesson by id: {}", id);
 
-        if (!lessonRepository.deleteById(id)) {
-            log.warn("failed to delete lesson by id: {}", id);
-            throw new ServerException("lesson wasn't delete", 5005, null);
-        }
+        lessonRepository.deleteById(id);
     }
 
 

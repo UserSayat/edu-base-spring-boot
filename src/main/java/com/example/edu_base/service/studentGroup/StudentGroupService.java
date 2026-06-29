@@ -30,64 +30,41 @@ public class StudentGroupService implements IStudentGroupService {
     @Override
     public StudentGroupResponse addStudentGroup(StudentGroupRequest request) throws ServerException {
         log.info("adding student group: {}", request.getGroupName());
-        try {
-            StudentGroup groupEntity = new StudentGroup(null,
-                    request.getGroupName(),
-                    ZonedDateTime.now(ZoneOffset.UTC),
-                    ZonedDateTime.now(ZoneOffset.UTC));
-            return toStudentGroupResponse(studentGroupRepository.save(groupEntity));
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to add student group: {}", request.getGroupName(), e);
-            throw new ServerException(message, e, 1001, null);
-        }
+        StudentGroup groupEntity = new StudentGroup(null,
+                request.getGroupName(),
+                ZonedDateTime.now(ZoneOffset.UTC),
+                ZonedDateTime.now(ZoneOffset.UTC));
+        return toStudentGroupResponse(studentGroupRepository.save(groupEntity));
     }
 
     @Override
     public StudentGroupResponse getStudentGroupById(long id) throws ServerException {
         log.info("getting student group by id: {}", id);
-        try {
-            StudentGroup groupEntity = studentGroupRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
-            return toStudentGroupResponse(groupEntity);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get student group by id: {}", id, e);
-            throw new ServerException(message, e, 1002, null);
-        }
+        StudentGroup groupEntity = studentGroupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
+        return toStudentGroupResponse(groupEntity);
     }
 
     @Override
     public List<StudentGroupResponse> getStudentGroups() throws ServerException {
-        try {
-            return studentGroupRepository.findAll()
-                    .stream()
-                    .map(this::toStudentGroupResponse)
-                    .toList();
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get student groups");
-            throw new ServerException(message, e, 1003, null);
-        }
+        log.info("getting all student groups");
+        return studentGroupRepository.findAll()
+                .stream()
+                .map(this::toStudentGroupResponse)
+                .toList();
     }
 
     @Override
     public StudentGroupResponse editStudentGroup(long id, StudentGroupRequest request) throws ServerException {
         log.info("editing student group by id: {}", id);
-        try {
-            StudentGroup studentGroup = studentGroupRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
+        StudentGroup studentGroup = studentGroupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
 
-            studentGroup.setGroupName(request.getGroupName());
-            studentGroup.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
-            studentGroupRepository.update(studentGroup);
+        studentGroup.setGroupName(request.getGroupName());
+        studentGroup.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        studentGroupRepository.update(studentGroup);
 
-            return toStudentGroupResponse(studentGroup);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to edit student group by id: {}", id, e);
-            throw new ServerException(message, e, 1004, null);
-        }
+        return toStudentGroupResponse(studentGroup);
     }
 
     @Override

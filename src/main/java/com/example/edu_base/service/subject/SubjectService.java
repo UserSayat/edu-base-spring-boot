@@ -30,67 +30,44 @@ public class SubjectService implements ISubjectService {
     @Override
     public SubjectResponse addSubject(SubjectRequest request) throws ServerException {
         log.info("adding subject: {}", request.getSubjectName());
-        try {
-            Subject subject = new Subject(null,
-                    request.getSubjectName(),
-                    ZonedDateTime.now(ZoneOffset.UTC),
-                    ZonedDateTime.now(ZoneOffset.UTC));
+        Subject subject = new Subject(null,
+                request.getSubjectName(),
+                ZonedDateTime.now(ZoneOffset.UTC),
+                ZonedDateTime.now(ZoneOffset.UTC));
 
-            return toSubjectResponse(subjectRepository.save(subject));
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to add subject: {}", request.getSubjectName(), e);
-            throw new ServerException(message, e, 4001, null);
-        }
+        return toSubjectResponse(subjectRepository.save(subject));
     }
 
     @Override
     public SubjectResponse getSubjectById(long id) throws ServerException {
         log.info("getting subject by id: {}", id);
-        try {
-            Subject subject = subjectRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
 
-            return toSubjectResponse(subject);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get subject by id: {}", id, e);
-            throw new ServerException(message, e, 4002, null);
-        }
+        return toSubjectResponse(subject);
     }
 
     @Override
     public List<SubjectResponse> getSubjects() throws ServerException {
-        try {
-            return subjectRepository.findAll()
-                    .stream()
-                    .map(this::toSubjectResponse)
-                    .toList();
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get subjects", e);
-            throw new ServerException(message, e, 4003, null);
-        }
+        log.info("get all subjects");
+        return subjectRepository.findAll()
+                .stream()
+                .map(this::toSubjectResponse)
+                .toList();
     }
 
     @Override
     public SubjectResponse editSubject(long id, SubjectRequest request) throws ServerException {
         log.info("editing subject by id: {}", id);
-        try {
-            Subject subject = subjectRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
 
-            subject.setSubjectName(request.getSubjectName());
-            subject.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        subject.setSubjectName(request.getSubjectName());
+        subject.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
-            subjectRepository.update(subject);
+        subjectRepository.update(subject);
 
-            return toSubjectResponse(subject);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to edit subject by id: {}", id, e);
-            throw new ServerException(message, e, 4004, null);
-        }
+        return toSubjectResponse(subject);
     }
 
     @Override

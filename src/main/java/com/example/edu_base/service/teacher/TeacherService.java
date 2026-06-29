@@ -33,73 +33,48 @@ public class TeacherService implements ITeacherService {
                 request.getLastName(),
                 request.getFirstName(),
                 request.getMiddleName());
-        try {
-            Teacher teacher = new Teacher(null,
-                    request.getLastName(),
-                    request.getFirstName(),
-                    request.getMiddleName(),
-                    ZonedDateTime.now(ZoneOffset.UTC),
-                    ZonedDateTime.now(ZoneOffset.UTC));
 
-            return toTeacherResponse(teacherRepository.save(teacher));
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to add teacher: {} {} {}",
-                    request.getLastName(),
-                    request.getFirstName(),
-                    request.getMiddleName(), e);
-            throw new ServerException(message, e, 3001, null);
-        }
+        Teacher teacher = new Teacher(null,
+                request.getLastName(),
+                request.getFirstName(),
+                request.getMiddleName(),
+                ZonedDateTime.now(ZoneOffset.UTC),
+                ZonedDateTime.now(ZoneOffset.UTC));
+
+        return toTeacherResponse(teacherRepository.save(teacher));
     }
 
     @Override
     public TeacherResponse getTeacherById(long id) throws ServerException {
         log.info("getting teacher by id: {}", id);
-        try {
-            Teacher teacher = teacherRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
-            return toTeacherResponse(teacher);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get teacher by id: {}", id, e);
-            throw new ServerException(message, e, 3002, null);
-        }
+        Teacher teacher = teacherRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
+        return toTeacherResponse(teacher);
     }
 
     @Override
     public List<TeacherResponse> getTeachers() throws ServerException {
-        try {
-            return teacherRepository.findAll()
-                    .stream()
-                    .map(this::toTeacherResponse)
-                    .toList();
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get teachers");
-            throw new ServerException(message, e, 3003, null);
-        }
+        log.info("getting all teachers");
+        return teacherRepository.findAll()
+                .stream()
+                .map(this::toTeacherResponse)
+                .toList();
     }
 
     @Override
     public TeacherResponse editTeacher(long id, TeacherRequest request) throws ServerException {
         log.info("editing teacher by id: {}", id);
-        try {
-            Teacher teacher = teacherRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
+        Teacher teacher = teacherRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
 
-            teacher.setLastName(request.getLastName());
-            teacher.setFirstName(request.getFirstName());
-            teacher.setMiddleName(request.getMiddleName());
-            teacher.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        teacher.setLastName(request.getLastName());
+        teacher.setFirstName(request.getFirstName());
+        teacher.setMiddleName(request.getMiddleName());
+        teacher.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
-            teacherRepository.update(teacher);
+        teacherRepository.update(teacher);
 
-            return toTeacherResponse(teacher);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to edit teacher by id: {}", id, e);
-            throw new ServerException(message, e, 3004, null);
-        }
+        return toTeacherResponse(teacher);
     }
 
     @Override

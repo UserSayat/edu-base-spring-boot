@@ -40,80 +40,57 @@ public class StudentService implements IStudentService {
                 request.getLastName(),
                 request.getFirstName(),
                 request.getMiddleName());
-        try {
-            studentGroupRepository.findById(request.getStudentGroupId())
-                    .orElseThrow(() -> new EntityNotFoundException("group with id:" + request.getStudentGroupId() + " not found"));
 
-            Student student = new Student(null,
-                    request.getLastName(),
-                    request.getFirstName(),
-                    request.getMiddleName(),
-                    request.getStudentStatus(),
-                    request.getStudentGroupId(),
-                    ZonedDateTime.now(ZoneOffset.UTC),
-                    ZonedDateTime.now(ZoneOffset.UTC));
-            return toStudentResponse(studentRepository.save(student));
-        } catch (Exception e) {
-            log.error("failed to add student: {} {} {}",
-                    request.getLastName(), request.getFirstName(), request.getMiddleName(), e);
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            throw new ServerException(message, e, 2001, null);
-        }
+        studentGroupRepository.findById(request.getStudentGroupId())
+                .orElseThrow(() -> new EntityNotFoundException("group with id:" + request.getStudentGroupId() + " not found"));
+
+        Student student = new Student(null,
+                request.getLastName(),
+                request.getFirstName(),
+                request.getMiddleName(),
+                request.getStudentStatus(),
+                request.getStudentGroupId(),
+                ZonedDateTime.now(ZoneOffset.UTC),
+                ZonedDateTime.now(ZoneOffset.UTC));
+        return toStudentResponse(studentRepository.save(student));
     }
 
     @Override
     public StudentResponse getStudentById(long id) throws ServerException {
         log.info("getting student by id: {}", id);
-        try {
-            Student student = studentRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("student: " + id + " not found"));
-            return toStudentResponse(student);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get student by id: {}", id, e);
-            throw new ServerException(message, e, 2002, null);
-        }
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("student: " + id + " not found"));
+        return toStudentResponse(student);
     }
 
     @Override
     public List<StudentResponse> getStudentsByGroup(long id) throws ServerException {
-        try {
-            return studentRepository.findByStudentGroupId(id)
-                    .stream()
-                    .map(this::toStudentResponse)
-                    .toList();
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get students");
-            throw new ServerException(message, e, 2003, null);
-        }
+        log.info("getting students by group: {}", id);
+        return studentRepository.findByStudentGroupId(id)
+                .stream()
+                .map(this::toStudentResponse)
+                .toList();
     }
 
     @Override
     public StudentResponse editStudent(long id, StudentRequest request) throws ServerException {
         log.info("editing student by id: {}", id);
-        try {
-            Student student = studentRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("student: " + id + " not found"));
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("student: " + id + " not found"));
 
-            studentGroupRepository.findById(request.getStudentGroupId())
-                    .orElseThrow(() -> new EntityNotFoundException("group with id: " + request.getStudentGroupId() + " not found"));
+        studentGroupRepository.findById(request.getStudentGroupId())
+                .orElseThrow(() -> new EntityNotFoundException("group with id: " + request.getStudentGroupId() + " not found"));
 
-            student.setLastName(request.getLastName());
-            student.setFirstName(request.getFirstName());
-            student.setMiddleName(request.getMiddleName());
-            student.setStudentGroupId(request.getStudentGroupId());
-            student.setStatus(request.getStudentStatus());
-            student.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        student.setLastName(request.getLastName());
+        student.setFirstName(request.getFirstName());
+        student.setMiddleName(request.getMiddleName());
+        student.setStudentGroupId(request.getStudentGroupId());
+        student.setStatus(request.getStudentStatus());
+        student.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
-            studentRepository.update(student);
+        studentRepository.update(student);
 
-            return toStudentResponse(student);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to edit student by id: {}", id, e);
-            throw new ServerException(message, e, 2004, null);
-        }
+        return toStudentResponse(student);
     }
 
     @Transactional

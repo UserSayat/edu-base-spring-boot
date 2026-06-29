@@ -91,45 +91,34 @@ public class LessonService implements ILessonService {
 
     @Override
     public List<LessonResponse> getLessons() throws ServerException {
-        try {
-            return lessonRepository.findAll().stream()
-                    .map(this::toLessonResponse)
-                    .toList();
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get lessons", e);
-            throw new ServerException(message, e, 5003, null);
-        }
+        log.info("getting all lessons");
+        return lessonRepository.findAll().stream()
+                .map(this::toLessonResponse)
+                .toList();
     }
 
     @Override
     public LessonResponse editLesson(long id, LessonRequest request) throws ServerException {
         log.info("editing lesson by id: {}", id);
-        try {
-            Lesson lesson = lessonRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
 
-            studentGroupRepository.findById(request.getStudentGroupId())
-                    .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
+        studentGroupRepository.findById(request.getStudentGroupId())
+                .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
 
-            if (lessonRepository.findByDateAndPairNumber(request.getDate(), request.getPairNumber()).isPresent())
-                throw new IllegalArgumentException("can not edit lesson, time is busy already");
+        if (lessonRepository.findByDateAndPairNumber(request.getDate(), request.getPairNumber()).isPresent())
+            throw new IllegalArgumentException("can not edit lesson, time is busy already");
 
-            lesson.setSubjectId(request.getSubjectId());
-            lesson.setDate(request.getDate());
-            lesson.setPairNumber(request.getPairNumber());
-            lesson.setTeacherId(request.getTeacherId());
-            lesson.setStudentGroupId(request.getStudentGroupId());
-            lesson.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        lesson.setSubjectId(request.getSubjectId());
+        lesson.setDate(request.getDate());
+        lesson.setPairNumber(request.getPairNumber());
+        lesson.setTeacherId(request.getTeacherId());
+        lesson.setStudentGroupId(request.getStudentGroupId());
+        lesson.setUpdatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
-            lessonRepository.update(lesson);
+        lessonRepository.update(lesson);
 
-            return toLessonResponse(lesson);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to edit lesson: {}", id, e);
-            throw new ServerException(message, e, 5004, null);
-        }
+        return toLessonResponse(lesson);
     }
 
     @Override

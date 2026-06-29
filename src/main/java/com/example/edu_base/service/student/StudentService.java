@@ -4,7 +4,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.studentGroup.StudentGroupResponse;
 import com.example.edu_base.dto.student.StudentRequest;
 import com.example.edu_base.dto.student.StudentResponse;
@@ -35,7 +34,7 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public StudentResponse addStudent(StudentRequest request) throws ServerException {
+    public StudentResponse addStudent(StudentRequest request) {
         log.info("adding student: {} {} {}",
                 request.getLastName(),
                 request.getFirstName(),
@@ -56,7 +55,7 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public StudentResponse getStudentById(long id) throws ServerException {
+    public StudentResponse getStudentById(long id) {
         log.info("getting student by id: {}", id);
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("student: " + id + " not found"));
@@ -64,7 +63,7 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public List<StudentResponse> getStudentsByGroup(long id) throws ServerException {
+    public List<StudentResponse> getStudentsByGroup(long id) {
         log.info("getting students by group: {}", id);
         return studentRepository.findByStudentGroupId(id)
                 .stream()
@@ -73,7 +72,7 @@ public class StudentService implements IStudentService {
     }
 
     @Override
-    public StudentResponse editStudent(long id, StudentRequest request) throws ServerException {
+    public StudentResponse editStudent(long id, StudentRequest request) {
         log.info("editing student by id: {}", id);
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("student: " + id + " not found"));
@@ -95,7 +94,7 @@ public class StudentService implements IStudentService {
 
     @Transactional
     @Override
-    public void deleteStudent(long id) throws ServerException {
+    public void deleteStudent(long id) {
         log.info("deleting student by id: {}", id);
 
         studentRepository.deleteById(id);

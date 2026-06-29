@@ -1,7 +1,6 @@
 package com.example.edu_base.controller;
 
 import com.example.edu_base.common.CommonResponse;
-import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.exception.EntityNotFoundException;
 import com.example.edu_base.exception.UnauthenticatedException;
 import com.example.edu_base.exception.UnauthorizedException;
@@ -76,15 +75,6 @@ public class GlobalExceptionHandler {
         CommonResponse<?> response = new CommonResponse<>(10005, message, null);
         response.setSuccess(false);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(response);
-    }
-
-    @ExceptionHandler(ServerException.class)
-    public ResponseEntity<CommonResponse<?>> handleServerException(ServerException e) {
-        log.error("database interaction failure while performing an operation: ", e);
-        CommonResponse<?> response = new CommonResponse<>(e.getErrorCode(), e.getMessage(), e.getDetails());
-        response.setSuccess(false);
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT)
                 .body(response);
     }
 

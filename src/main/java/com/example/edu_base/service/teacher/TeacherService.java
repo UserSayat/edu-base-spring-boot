@@ -1,6 +1,5 @@
 package com.example.edu_base.service.teacher;
 
-import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.teacher.TeacherRequest;
 import com.example.edu_base.dto.teacher.TeacherResponse;
 import com.example.edu_base.entity.Lesson;
@@ -28,7 +27,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public TeacherResponse addTeacher(TeacherRequest request) throws ServerException {
+    public TeacherResponse addTeacher(TeacherRequest request) {
         log.info("adding teacher: {} {} {}",
                 request.getLastName(),
                 request.getFirstName(),
@@ -45,7 +44,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public TeacherResponse getTeacherById(long id) throws ServerException {
+    public TeacherResponse getTeacherById(long id) {
         log.info("getting teacher by id: {}", id);
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
@@ -53,7 +52,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public List<TeacherResponse> getTeachers() throws ServerException {
+    public List<TeacherResponse> getTeachers() {
         log.info("getting all teachers");
         return teacherRepository.findAll()
                 .stream()
@@ -62,7 +61,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public TeacherResponse editTeacher(long id, TeacherRequest request) throws ServerException {
+    public TeacherResponse editTeacher(long id, TeacherRequest request) {
         log.info("editing teacher by id: {}", id);
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("teacher: " + id + " not found"));
@@ -78,7 +77,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
-    public void deleteTeacher(long id) throws ServerException {
+    public void deleteTeacher(long id) {
         log.info("deleting teacher by id: {}", id);
         List<Lesson> lessons = lessonRepository.findByTeacherId(id);
         if (!lessons.isEmpty())

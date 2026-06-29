@@ -1,6 +1,5 @@
 package com.example.edu_base.service.studentGroup;
 
-import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.studentGroup.StudentGroupRequest;
 import com.example.edu_base.dto.studentGroup.StudentGroupResponse;
 import com.example.edu_base.entity.Student;
@@ -28,7 +27,7 @@ public class StudentGroupService implements IStudentGroupService {
     }
 
     @Override
-    public StudentGroupResponse addStudentGroup(StudentGroupRequest request) throws ServerException {
+    public StudentGroupResponse addStudentGroup(StudentGroupRequest request) {
         log.info("adding student group: {}", request.getGroupName());
         StudentGroup groupEntity = new StudentGroup(null,
                 request.getGroupName(),
@@ -38,7 +37,7 @@ public class StudentGroupService implements IStudentGroupService {
     }
 
     @Override
-    public StudentGroupResponse getStudentGroupById(long id) throws ServerException {
+    public StudentGroupResponse getStudentGroupById(long id) {
         log.info("getting student group by id: {}", id);
         StudentGroup groupEntity = studentGroupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
@@ -46,7 +45,7 @@ public class StudentGroupService implements IStudentGroupService {
     }
 
     @Override
-    public List<StudentGroupResponse> getStudentGroups() throws ServerException {
+    public List<StudentGroupResponse> getStudentGroups() {
         log.info("getting all student groups");
         return studentGroupRepository.findAll()
                 .stream()
@@ -55,7 +54,7 @@ public class StudentGroupService implements IStudentGroupService {
     }
 
     @Override
-    public StudentGroupResponse editStudentGroup(long id, StudentGroupRequest request) throws ServerException {
+    public StudentGroupResponse editStudentGroup(long id, StudentGroupRequest request) {
         log.info("editing student group by id: {}", id);
         StudentGroup studentGroup = studentGroupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("student group: " + id + " not found"));
@@ -68,7 +67,7 @@ public class StudentGroupService implements IStudentGroupService {
     }
 
     @Override
-    public void deleteStudentGroup(long id) throws ServerException {
+    public void deleteStudentGroup(long id) {
         log.info("deleting student group by id: {}", id);
         List<Student> students = studentRepository.findByStudentGroupId(id);
         if (!students.isEmpty())

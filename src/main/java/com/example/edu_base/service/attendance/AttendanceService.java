@@ -1,6 +1,5 @@
 package com.example.edu_base.service.attendance;
 
-import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.attendance.AttendanceRequest;
 import com.example.edu_base.dto.attendance.AttendanceResponse;
 import com.example.edu_base.entity.Attendance;
@@ -24,7 +23,7 @@ public class AttendanceService implements IAttendanceService {
     }
 
     @Override
-    public AttendanceResponse addAttendance(AttendanceRequest request) throws ServerException {
+    public AttendanceResponse addAttendance(AttendanceRequest request) {
         log.info("adding attendance for lesson: {}", request.getLessonId());
         Attendance attendance = new Attendance(null,
                 request.getLessonId(),
@@ -37,7 +36,7 @@ public class AttendanceService implements IAttendanceService {
     }
 
     @Override
-    public AttendanceResponse getAttendanceById(long id) throws ServerException {
+    public AttendanceResponse getAttendanceById(long id) {
         log.info("getting attendance by id: {}", id);
         Attendance attendance = attendanceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("attendance: " + id + " not found"));
@@ -46,7 +45,7 @@ public class AttendanceService implements IAttendanceService {
     }
 
     @Override
-    public List<AttendanceResponse> getAttendances() throws ServerException {
+    public List<AttendanceResponse> getAttendances() {
         log.info("getting all attendances");
         return attendanceRepository.findAll().stream()
                 .map(this::toAttendanceResponse)
@@ -54,7 +53,7 @@ public class AttendanceService implements IAttendanceService {
     }
 
     @Override
-    public AttendanceResponse editAttendance(long id, AttendanceRequest request) throws ServerException {
+    public AttendanceResponse editAttendance(long id, AttendanceRequest request) {
         log.info("editing attendance by id: {}", id);
         Attendance attendance = attendanceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("attendance: " + id + " not found"));
@@ -70,7 +69,7 @@ public class AttendanceService implements IAttendanceService {
     }
 
     @Override
-    public void deleteAttendance(long id) throws ServerException {
+    public void deleteAttendance(long id) {
         log.info("deleting attendance by id: {}", id);
 
         attendanceRepository.deleteById(id);

@@ -1,6 +1,5 @@
 package com.example.edu_base.service.lesson;
 
-import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.lesson.LessonRequest;
 import com.example.edu_base.dto.lesson.LessonResponse;
 import com.example.edu_base.dto.lesson.LessonWithAttendanceResponse;
@@ -40,57 +39,45 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public LessonResponse addLesson(LessonRequest request) throws ServerException {
+    public LessonResponse addLesson(LessonRequest request) {
         log.info("adding lesson for student group: {}", request.getStudentGroupId());
-        try {
             subjectRepository.findById(request.getSubjectId())
                     .orElseThrow(() -> new EntityNotFoundException("subject with id: " + request.getStudentGroupId() + " not found"));
 
-            studentGroupRepository.findById(request.getStudentGroupId())
-                    .orElseThrow(() -> new EntityNotFoundException("student group with id: " + request.getStudentGroupId() + " not found"));
+        studentGroupRepository.findById(request.getStudentGroupId())
+                .orElseThrow(() -> new EntityNotFoundException("student group with id: " + request.getStudentGroupId() + " not found"));
 
-            Lesson lesson = new Lesson(null,
-                    request.getSubjectId(),
-                    request.getDate(),
-                    request.getPairNumber(),
-                    request.getTeacherId(),
-                    request.getStudentGroupId(),
-                    ZonedDateTime.now(ZoneOffset.UTC),
-                    ZonedDateTime.now(ZoneOffset.UTC));
+        Lesson lesson = new Lesson(null,
+                request.getSubjectId(),
+                request.getDate(),
+                request.getPairNumber(),
+                request.getTeacherId(),
+                request.getStudentGroupId(),
+                ZonedDateTime.now(ZoneOffset.UTC),
+                ZonedDateTime.now(ZoneOffset.UTC));
 
-            return toLessonResponse(lessonRepository.save(lesson));
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to add lesson for student group: {}", request.getStudentGroupId(), e);
-            throw new ServerException(message, e, 5001, null);
-        }
+        return toLessonResponse(lessonRepository.save(lesson));
     }
 
     @Override
-    public LessonWithAttendanceResponse getLessonById(long id) throws ServerException {
+    public LessonWithAttendanceResponse getLessonById(long id) {
         log.info("getting lesson by id: {}", id);
-        try {
-            Lesson lesson = lessonRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
 
-            List<Long> studentIds = lessonRepository.findStudentsByStudentGroupId(lesson.getStudentGroupId());
+        List<Long> studentIds = lessonRepository.findStudentsByStudentGroupId(lesson.getStudentGroupId());
 
-            List<Pair<Long, Boolean>> attendance = new ArrayList<>();
-            for (Long studentId : studentIds) {
-                Boolean isPresent = attendanceRepository.findByStudentId(studentId).isPresent();
-                attendance.add(new ImmutablePair<>(studentId, isPresent));
-            }
-
-            return toLessonWithAttendanceResponse(lesson, attendance);
-        } catch (Exception e) {
-            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-            log.error("failed to get lesson: {}", id, e);
-            throw new ServerException(message, e, 5002, null);
+        List<Pair<Long, Boolean>> attendance = new ArrayList<>();
+        for (Long studentId : studentIds) {
+            Boolean isPresent = attendanceRepository.findByStudentId(studentId).isPresent();
+            attendance.add(new ImmutablePair<>(studentId, isPresent));
         }
+
+        return toLessonWithAttendanceResponse(lesson, attendance);
     }
 
     @Override
-    public List<LessonResponse> getLessons() throws ServerException {
+    public List<LessonResponse> getLessons() {
         log.info("getting all lessons");
         return lessonRepository.findAll().stream()
                 .map(this::toLessonResponse)
@@ -98,7 +85,7 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public LessonResponse editLesson(long id, LessonRequest request) throws ServerException {
+    public LessonResponse editLesson(long id, LessonRequest request) {
         log.info("editing lesson by id: {}", id);
         Lesson lesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
@@ -122,7 +109,7 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public void deleteLesson(long id) throws ServerException {
+    public void deleteLesson(long id) {
         log.info("deleting lesson by id: {}", id);
 
         lessonRepository.deleteById(id);

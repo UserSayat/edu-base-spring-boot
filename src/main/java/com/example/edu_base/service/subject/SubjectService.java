@@ -1,6 +1,5 @@
 package com.example.edu_base.service.subject;
 
-import com.example.edu_base.exception.ServerException;
 import com.example.edu_base.dto.subject.SubjectRequest;
 import com.example.edu_base.dto.subject.SubjectResponse;
 import com.example.edu_base.entity.Lesson;
@@ -28,7 +27,7 @@ public class SubjectService implements ISubjectService {
     }
 
     @Override
-    public SubjectResponse addSubject(SubjectRequest request) throws ServerException {
+    public SubjectResponse addSubject(SubjectRequest request) {
         log.info("adding subject: {}", request.getSubjectName());
         Subject subject = new Subject(null,
                 request.getSubjectName(),
@@ -39,7 +38,7 @@ public class SubjectService implements ISubjectService {
     }
 
     @Override
-    public SubjectResponse getSubjectById(long id) throws ServerException {
+    public SubjectResponse getSubjectById(long id) {
         log.info("getting subject by id: {}", id);
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
@@ -48,7 +47,7 @@ public class SubjectService implements ISubjectService {
     }
 
     @Override
-    public List<SubjectResponse> getSubjects() throws ServerException {
+    public List<SubjectResponse> getSubjects() {
         log.info("get all subjects");
         return subjectRepository.findAll()
                 .stream()
@@ -57,7 +56,7 @@ public class SubjectService implements ISubjectService {
     }
 
     @Override
-    public SubjectResponse editSubject(long id, SubjectRequest request) throws ServerException {
+    public SubjectResponse editSubject(long id, SubjectRequest request) {
         log.info("editing subject by id: {}", id);
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("subject: " + id + " not found"));
@@ -71,7 +70,7 @@ public class SubjectService implements ISubjectService {
     }
 
     @Override
-    public void deleteSubject(long id) throws ServerException {
+    public void deleteSubject(long id) {
         log.info("deleting subject by id: {}", id);
         List<Lesson> lessons = lessonRepository.findBySubjectId(id);
         if (!lessons.isEmpty())

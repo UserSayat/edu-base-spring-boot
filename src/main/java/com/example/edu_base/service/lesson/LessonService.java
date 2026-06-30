@@ -4,8 +4,10 @@ import com.example.edu_base.dto.lesson.LessonRequest;
 import com.example.edu_base.dto.lesson.LessonResponse;
 import com.example.edu_base.dto.lesson.LessonWithAttendanceResponse;
 import com.example.edu_base.entity.Lesson;
+import com.example.edu_base.entity.Student;
 import com.example.edu_base.repository.attendance.IAttendanceRepository;
 import com.example.edu_base.repository.lesson.ILessonRepository;
+import com.example.edu_base.repository.student.IStudentRepository;
 import com.example.edu_base.repository.studentGroup.IStudentGroupRepository;
 import com.example.edu_base.repository.subject.ISubjectRepository;
 import com.example.edu_base.exception.EntityNotFoundException;
@@ -24,15 +26,18 @@ import java.util.List;
 public class LessonService implements ILessonService {
 
     private final ILessonRepository lessonRepository;
+    private final IStudentRepository studentRepository;
     private final IStudentGroupRepository studentGroupRepository;
     private final ISubjectRepository subjectRepository;
     private final IAttendanceRepository attendanceRepository;
 
     public LessonService(ILessonRepository lessonRepository,
+                         IStudentRepository studentRepository,
                          IStudentGroupRepository studentGroupRepository,
                          ISubjectRepository subjectRepository,
                          IAttendanceRepository attendanceRepository) {
         this.lessonRepository = lessonRepository;
+        this.studentRepository = studentRepository;
         this.studentGroupRepository = studentGroupRepository;
         this.subjectRepository = subjectRepository;
         this.attendanceRepository = attendanceRepository;
@@ -65,12 +70,24 @@ public class LessonService implements ILessonService {
         Lesson lesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("lesson: " + id + " not found"));
 
-        List<Long> studentIds = lessonRepository.findStudentsByStudentGroupId(lesson.getStudentGroupId());
+        List<Long> studentIds = studentRepository.findByStudentGroupId(lesson.getStudentGroupId())
+                .stream()
+                .map(Student::getId)
+                .toList();
 
-        List<Pair<Long, Boolean>> attendance = new ArrayList<>();
+        List<Pair<String, String>> attendance = new ArrayList<>();
         for (Long studentId : studentIds) {
-            Boolean isPresent = attendanceRepository.findByStudentId(studentId).isPresent();
-            attendance.add(new ImmutablePair<>(studentId, isPresent));
+
+            Student student = studentRepository.findById(studentId)
+                    .orElseThrow(() -> new EntityNotFoundException("student " + studentId + " not found"));
+
+            String middleName = student.getMiddleName() != null ? student.getMiddleName() : "";
+
+            String fullName = studentId + ": " + student.getLastName() + " " + student.getFirstName() + " " + middleName;
+
+            String isPresent = attendanceRepository.findByStudentId(studentId).isPresent() ? "present" : "absent";
+
+            attendance.add(new ImmutablePair<>(fullName, isPresent));
         }
 
         return toLessonWithAttendanceResponse(lesson, attendance);
@@ -128,7 +145,8 @@ public class LessonService implements ILessonService {
                 lesson.getUpdatedAt());
     }
 
-    public LessonWithAttendanceResponse toLessonWithAttendanceResponse(Lesson lesson, List<Pair<Long, Boolean>> attendance) {
+    public LessonWithAttendanceResponse toLessonWithAttendanceResponse(Lesson lesson, List<Pair<String, String>> attendance) {
+
         return new LessonWithAttendanceResponse(lesson.getId(),
                 lesson.getSubjectId(),
                 lesson.getDate(),

@@ -136,13 +136,13 @@ public class LessonRepository implements ILessonRepository {
         }
     }
 
-    @Override
-    public List<Long> findStudentsByStudentGroupId(long id) {
-        String sql = """
-        SELECT s.id FROM students s
-        JOIN lessons l ON s.student_group_id = l.student_group_id
-        WHERE s.student_group_id = ?
-        """;
-        return jdbcTemplate.queryForList(sql, Long.class, id);
-    }
+//    @Override
+//    public List<Long> findStudentsByStudentGroupId(long id) {
+//        String sql = """
+//        SELECT s.id FROM students s
+//        JOIN lessons l ON s.student_group_id = l.student_group_id
+//        WHERE s.student_group_id = ?
+//        """;
+//        return jdbcTemplate.queryForList(sql, Long.class, id);
+//    }
 }

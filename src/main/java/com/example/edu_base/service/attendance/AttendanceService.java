@@ -3,8 +3,12 @@ package com.example.edu_base.service.attendance;
 import com.example.edu_base.dto.attendance.AttendanceRequest;
 import com.example.edu_base.dto.attendance.AttendanceResponse;
 import com.example.edu_base.entity.Attendance;
+import com.example.edu_base.entity.Lesson;
+import com.example.edu_base.entity.Student;
 import com.example.edu_base.repository.attendance.IAttendanceRepository;
 import com.example.edu_base.exception.EntityNotFoundException;
+import com.example.edu_base.repository.lesson.ILessonRepository;
+import com.example.edu_base.repository.student.IStudentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +21,28 @@ import java.util.List;
 public class AttendanceService implements IAttendanceService {
 
     private final IAttendanceRepository attendanceRepository;
+    private final IStudentRepository studentRepository;
+    private final ILessonRepository lessonRepository;
 
-    public AttendanceService(IAttendanceRepository attendanceRepository) {
+    public AttendanceService(IAttendanceRepository attendanceRepository, IStudentRepository studentRepository, ILessonRepository lessonRepository) {
         this.attendanceRepository = attendanceRepository;
+        this.studentRepository = studentRepository;
+        this.lessonRepository = lessonRepository;
     }
 
     @Override
     public AttendanceResponse addAttendance(AttendanceRequest request) {
         log.info("adding attendance for lesson: {}", request.getLessonId());
+
+        Student student = studentRepository.findById(request.getStudentId())
+                .orElseThrow(() -> new EntityNotFoundException("student " + request.getStudentId() + " not found"));
+
+        Lesson lesson = lessonRepository.findById(request.getLessonId())
+                .orElseThrow(() -> new EntityNotFoundException("lesson " + request.getLessonId() + " not found"));
+
+        if (!student.getStudentGroupId().equals(lesson.getStudentGroupId()))
+            throw new IllegalArgumentException("group number does not match");
+
         Attendance attendance = new Attendance(null,
                 request.getLessonId(),
                 request.getStudentId(),

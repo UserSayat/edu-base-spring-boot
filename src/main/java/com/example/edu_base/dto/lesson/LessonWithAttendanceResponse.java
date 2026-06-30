@@ -23,7 +23,7 @@ public class LessonWithAttendanceResponse {
     private Long teacherId;
     private Long studentGroupId;
 
-    private List<Pair<Long, Boolean>> attendance;
+    private List<Pair<String, String>> attendance;
 
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
